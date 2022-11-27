@@ -4,9 +4,18 @@ import pandas as pd
 import SimpleITK as sitk
 import numpy as np
 
+import preprocess.preprocess as preproc
 from utils import utils
 
 data_path = Path('__file__').resolve().parent.parent / 'data'
+
+NORMALIZATION_CFG = {
+    'norm_type': 'min-max',
+    'mask': None,
+    'max_val': 255,
+    'window': [-1024, 600],
+    'dtype': 'uint8',
+}
 
 
 class DirLabCOPD():
@@ -15,7 +24,9 @@ class DirLabCOPD():
         data_path: Path = data_path,
         cases: List[str] = ['all'],
         partitions: List[str] = ['train', 'val', 'test'],
-        return_lm_mask: bool = False
+        return_lm_mask: bool = False,
+        normalization_cfg: dict = None,
+        return_imgs: bool = True
     ):
         """
         Args:
@@ -26,14 +37,19 @@ class DirLabCOPD():
                 Defaults to ['train', 'val', 'test'].
             return_lm_mask (bool, optional): Whether to return a mask with the landmarks
                 for each image. Defaults to False.
+            normalization_cfg (dict, optional): How to normalize the images.
+                Defaults to None
+            return_imgs (bool, optional): Whether to return the images. Defaults to True.
         """
         self.data_path = data_path
         self.cases = cases
         self.partitions = partitions
         self.return_lm_mask = return_lm_mask
+        self.normalization_cfg = normalization_cfg
+        self.return_imgs = return_imgs
 
         # Read the dataset csv
-        self.df = pd.read_csv(data_path /'dir_lab_copd' / 'dir_lab_copd.csv', index_col=0)
+        self.df = pd.read_csv(data_path / 'dir_lab_copd' / 'dir_lab_copd.csv', index_col=0)
 
         # Filter by cases selection
         if 'all' not in self.cases:
@@ -62,10 +78,15 @@ class DirLabCOPD():
 
         # Load inhale data (fixed image)
         # Image
-        sample['i_img'] = sitk.ReadImage(str(case_path / f'{case}_iBHCT.nii.gz'))
-        sample['ref_metadata'] = utils.extract_metadata(sample['i_img'])
-        sample['i_img'] = sitk.GetArrayFromImage(sample['i_img'])
-        sample['i_img'] = np.moveaxis(sample['i_img'], [0, 1, 2], [2, 1, 0])
+        if self.return_imgs:
+            sample['i_img'] = sitk.ReadImage(str(case_path / f'{case}_iBHCT.nii.gz'))
+            sample['ref_metadata'] = utils.extract_metadata(sample['i_img'])
+            sample['i_img'] = sitk.GetArrayFromImage(sample['i_img'])
+            sample['i_img'] = np.moveaxis(sample['i_img'], [0, 1, 2], [2, 1, 0])
+        sample['i_img_path'] = str(case_path / f'{case}_iBHCT.nii.gz')
+        if self.normalization_cfg is not None:
+            sample['i_img'] = preproc.normalize(sample['i_img'], **self.normalization_cfg)
+
         # Landmarks
         if self.return_lm_mask:
             sample['i_landmark_mask'] = sitk.GetArrayFromImage(
@@ -77,9 +98,13 @@ class DirLabCOPD():
 
         # Load exahale data (fixed image)
         # Image
-        sample['e_img'] = sitk.ReadImage(str(case_path / f'{case}_eBHCT.nii.gz'))
-        sample['e_img'] = sitk.GetArrayFromImage(sample['e_img'])
-        sample['e_img'] = np.moveaxis(sample['e_img'], [0, 1, 2], [2, 1, 0])
+        if self.return_imgs:
+            sample['e_img'] = sitk.ReadImage(str(case_path / f'{case}_eBHCT.nii.gz'))
+            sample['e_img'] = sitk.GetArrayFromImage(sample['e_img'])
+            sample['e_img'] = np.moveaxis(sample['e_img'], [0, 1, 2], [2, 1, 0])
+        sample['e_img_path'] = str(case_path / f'{case}_eBHCT.nii.gz')
+        if self.normalization_cfg is not None:
+            sample['e_img'] = preproc.normalize(sample['e_img'], **self.normalization_cfg)
         # Landmarks
         if self.return_lm_mask:
             sample['e_landmark_mask'] = sitk.GetArrayFromImage(
