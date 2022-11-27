@@ -1,5 +1,7 @@
 data/
 .vscode/
+elastix/elastix-5.0.0*
+experiments/elastix/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
