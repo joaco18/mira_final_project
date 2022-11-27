@@ -4,23 +4,12 @@ import argparse
 import pandas as pd
 import numpy as np
 import logging
+import json
 
-from dataset import utils
+from dataset import data_utils
+from utils import utils
 
 logging.basicConfig(level=logging.INFO)
-
-dirlab_meta = {
-    'copd1': {'size': (512, 512, 121), 'spacing': (0.625, 0.625, -2.5), 'partition': 'train'},
-    'copd2': {'size': (512, 512, 102), 'spacing': (0.645, 0.645, -2.5), 'partition': 'train'},
-    'copd3': {'size': (512, 512, 126), 'spacing': (0.652, 0.652, -2.5), 'partition': 'train'},
-    'copd4': {'size': (512, 512, 126), 'spacing': (0.590, 0.590, -2.5), 'partition': 'train'},
-    'copd5': {'size': (512, 512, 131), 'spacing': (0.647, 0.647, -2.5), 'partition': 'val'},
-    'copd6': {'size': (512, 512, 119), 'spacing': (0.633, 0.633, -2.5), 'partition': 'val'},
-    'copd7': {'size': (512, 512, 112), 'spacing': (0.625, 0.625, -2.5), 'partition': 'test'},
-    'copd8': {'size': (512, 512, 115), 'spacing': (0.586, 0.586, -2.5), 'partition': 'test'},
-    'copd9': {'size': (512, 512, 116), 'spacing': (0.644, 0.644, -2.5), 'partition': 'test'},
-    'copd10': {'size': (512, 512, 135), 'spacing': (0.742, 0.742, -2.5), 'partition': 'test'},
-}
 
 
 def main():
@@ -41,6 +30,9 @@ def main():
     data_path = Path(args.raw_images_path)
     out_path = Path(args.output_path)
 
+    with open(str(data_path.parent / 'dir_lab_copd_metadata.json'), 'r') as json_file:
+        dirlab_meta = json.load(json_file)
+
     df = []
     for case_path in sorted(data_path.iterdir()):
         # Define paths
@@ -58,34 +50,43 @@ def main():
         meta = dirlab_meta[case]
 
         # Parse raw image and parse landmarks
+        img_out_paths, lm_out_paths, lm_pts_out_paths = [], [], []
         for img_path, lm_path in zip([i_img_path, e_img_path], [ilm_path, elm_path]):
-            img = utils.read_raw_sitk(
-                img_path, meta['size'], sitk.sitkInt16, meta['spacing']
-            )
+            img = data_utils.read_raw_sitk(
+                img_path, meta['size'], sitk.sitkInt16, meta['spacing'])
             # flip vertical axis:
-            # img_array = np.flip(sitk.GetArrayFromImage(img), axis=2)
             img_out_path = case_out_path / f'{img_path.stem}.nii.gz'
-            # utils.save_img_from_array(img_array, img, img_out_path)
             sitk.WriteImage(img, img_out_path)
 
             # Generate landmarks mask
             landmarks = pd.read_csv(
-                lm_path, header=None, sep='\t |\t', engine='python').values.astype(int)
+                lm_path, header=None, sep='\t |\t', engine='python').astype('int')
+            lm_pts_out_path = case_out_path / f'{lm_path.stem}.csv'
+            landmarks.to_csv(lm_pts_out_path, index=False, header=False)
+            landmarks = landmarks.values
 
-            lm_mask = utils.generate_lm_mask(landmarks, meta['size'])
+            lm_mask = data_utils.generate_lm_mask(landmarks, meta['size'])
             lm_mask = np.moveaxis(lm_mask, [0, 1, 2], [2, 1, 0])
 
             lm_out_path = case_out_path / f'{img_path.stem}_lm.nii.gz'
             utils.save_img_from_array(lm_mask, img, lm_out_path)
 
+            img_out_paths.append('/'.join(str(img_out_path).split('/')[-4:]))
+            lm_out_paths.append('/'.join(str(lm_out_path).split('/')[-4:]))
+            lm_pts_out_paths.append('/'.join(str(lm_pts_out_path).split('/')[-4:]))
+
         # Store the sample metadata
-        row = [i_img_path, e_img_path, ilm_path, elm_path] + [meta['partition']] + \
-            list(meta['size']) + list(meta['spacing'])
+        metrics_keys = [
+            'disp_mean', 'disp_std', 'observers_mean', 'observers_std', 'lowest_mean', 'lowest_std']
+        row = img_out_paths + lm_out_paths + lm_pts_out_paths
+        row = row + [meta['partition']] + list(meta['size']) + list(meta['spacing']) + [case]
+        row = row + [meta[key] for key in metrics_keys]
         df.append(row)
     columns = [
-        'i_img_path', 'e_img_path', 'i_lm_path', 'e_lm_path', 'partition',
-        'size_x', 'size_y', 'size_z', 'space_x', 'space_y', 'space_z'
+        'i_img_path', 'e_img_path', 'i_lm_img_path', 'e_lm_img_path', 'i_lm_path', 'e_lm_path',
+        'partition', 'size_x', 'size_y', 'size_z', 'space_x', 'space_y', 'space_z', 'case'
     ]
+    columns = columns + metrics_keys
     df = pd.DataFrame(df, columns=columns)
     df.to_csv(out_path/'dir_lab_copd.csv')
 
