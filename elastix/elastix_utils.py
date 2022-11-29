@@ -103,4 +103,3 @@ def modify_field_parameter_map(
         pm[field] = (value, )
     out_par_map_path = in_par_map_path if out_par_map_path is None else out_par_map_path
     sitk.WriteParameterFile(pm, str(out_par_map_path))
-
