@@ -7,7 +7,7 @@ import numpy as np
 import preprocess.preprocess as preproc
 from utils import utils
 
-data_path = Path('__file__').resolve().parent.parent / 'data'
+data_path = Path('__file__').resolve().parent / 'data'
 
 NORMALIZATION_CFG = {
     'norm_type': 'min-max',
@@ -26,7 +26,8 @@ class DirLabCOPD():
         partitions: List[str] = ['train', 'val', 'test'],
         return_lm_mask: bool = False,
         normalization_cfg: dict = None,
-        return_imgs: bool = True
+        return_imgs: bool = True,
+        return_lung_masks: bool = False
     ):
         """
         Args:
@@ -40,6 +41,8 @@ class DirLabCOPD():
             normalization_cfg (dict, optional): How to normalize the images.
                 Defaults to None
             return_imgs (bool, optional): Whether to return the images. Defaults to True.
+            return_lung_masks (bool, optional): Whether to return the lung_masks.
+                Defaults to False.
         """
         self.data_path = data_path
         self.cases = cases
@@ -47,6 +50,7 @@ class DirLabCOPD():
         self.return_lm_mask = return_lm_mask
         self.normalization_cfg = normalization_cfg
         self.return_imgs = return_imgs
+        self.return_lung_masks = return_lung_masks
 
         # Read the dataset csv
         self.df = pd.read_csv(data_path / 'dir_lab_copd' / 'dir_lab_copd.csv', index_col=0)
@@ -78,12 +82,17 @@ class DirLabCOPD():
 
         # Load inhale data (fixed image)
         # Image
+        sample['i_img_path'] = str(case_path / f'{case}_iBHCT.nii.gz')
         if self.return_imgs:
-            sample['i_img'] = sitk.ReadImage(str(case_path / f'{case}_iBHCT.nii.gz'))
+            sample['i_img'] = sitk.ReadImage(sample['i_img_path'])
             sample['ref_metadata'] = utils.extract_metadata(sample['i_img'])
             sample['i_img'] = sitk.GetArrayFromImage(sample['i_img'])
             sample['i_img'] = np.moveaxis(sample['i_img'], [0, 1, 2], [2, 1, 0])
-        sample['i_img_path'] = str(case_path / f'{case}_iBHCT.nii.gz')
+        if self.return_lung_masks:
+            sample['i_lung_mask'] = sitk.GetArrayFromImage(sitk.ReadImage(
+                str(case_path / f'{case}_iBHCT_lungs.nii.gz')))
+            sample['i_lung_mask'] = np.moveaxis(sample['i_lung_mask'], [0, 1, 2], [2, 1, 0])
+
         if self.normalization_cfg is not None:
             sample['i_img'] = preproc.normalize(sample['i_img'], **self.normalization_cfg)
 
@@ -98,11 +107,17 @@ class DirLabCOPD():
 
         # Load exahale data (fixed image)
         # Image
+        sample['e_img_path'] = str(case_path / f'{case}_eBHCT.nii.gz')
         if self.return_imgs:
             sample['e_img'] = sitk.ReadImage(str(case_path / f'{case}_eBHCT.nii.gz'))
             sample['e_img'] = sitk.GetArrayFromImage(sample['e_img'])
             sample['e_img'] = np.moveaxis(sample['e_img'], [0, 1, 2], [2, 1, 0])
-        sample['e_img_path'] = str(case_path / f'{case}_eBHCT.nii.gz')
+
+        if self.return_lung_masks:
+            sample['e_lung_mask'] = sitk.GetArrayFromImage(sitk.ReadImage(
+                str(case_path / f'{case}_eBHCT_lungs.nii.gz')))
+            sample['e_lung_mask'] = np.moveaxis(sample['e_lung_mask'], [0, 1, 2], [2, 1, 0])
+
         if self.normalization_cfg is not None:
             sample['e_img'] = preproc.normalize(sample['e_img'], **self.normalization_cfg)
         # Landmarks
