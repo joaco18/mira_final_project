@@ -24,21 +24,3 @@ def target_registration_error(
     distances = [euclidean(pt1, pt2) for pt1, pt2 in zip(pts_i, pts_e)]
     return np.around(np.mean(distances), 2), np.around(np.std(distances), 2)
 
-
-def get_landmarks_from_array(lm_mask: np.ndarray) -> np.ndarray:
-    """_summary_
-
-    Args:
-        lm_mask (np.ndarray): mask containing landmark points where each point
-            has a label coinciding to its index in the original dataset .txt.
-    Returns:
-        np.ndarray: array containing the x,y,z coordinates of each of the landmark
-            points orden according to the label index it has.
-    """
-    locs = []
-    for i in np.unique(lm_mask):
-        if i == 0:
-            continue
-        x, y, z = np.where(lm_mask == i)
-        locs.append([x, y, z])
-    return np.array(locs)
