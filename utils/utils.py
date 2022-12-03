@@ -56,7 +56,7 @@ def save_img_from_array_using_metadata(
     img.SetSpacing(metadata['spacing'])
     for key, val in metadata['metadata'].items():
         img.SetMetaData(key, val)
-    sitk.WriteImage(img, filepath)
+    sitk.WriteImage(img, str(filepath))
 
 
 def extract_metadata(img: sitk.Image) -> dict:
@@ -76,3 +76,21 @@ def extract_metadata(img: sitk.Image) -> dict:
     for key in img.GetMetaDataKeys():
         header['metadata'][key] = img.GetMetaData(key)
     return header
+
+
+def get_landmarks_from_array(lm_mask: np.ndarray) -> np.ndarray:
+    """
+    Args:
+        lm_mask (np.ndarray): mask containing landmark points where each point
+            has a label coinciding to its index in the original dataset .txt.
+    Returns:
+        np.ndarray: array containing the x,y,z coordinates of each of the landmark
+            points orden according to the label index it has.
+    """
+    locs = np.zeros((300, 3))
+    for i in np.unique(lm_mask):
+        if i != 0:
+            i = int(i)
+            x, y, z = np.where(lm_mask == i)
+            locs[i, :] = np.array([x[0], y[0], z[0]])
+    return locs

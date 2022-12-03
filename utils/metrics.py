@@ -23,3 +23,4 @@ def target_registration_error(
     pts_e = pts_e * voxel_size
     distances = [euclidean(pt1, pt2) for pt1, pt2 in zip(pts_i, pts_e)]
     return np.around(np.mean(distances), 2), np.around(np.std(distances), 2)
+

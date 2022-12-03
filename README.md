@@ -73,7 +73,7 @@ base="${cwd}/elastix-5.0.0-Linux" &&
 anacondaenv="/home/jseia/anaconda3/envs/mira_fp" &&
 export PATH=bin/:$PATH &&
 export LD_LIBRARY_PATH="${base}/lib":$LD_LIBRARY_PATH &&
-# sudo rm "${anacondaenv}/bin/elastix"  &&
+# sudo rm "${anacondaenv}/bin/elastix" &&
 # sudo rm "${anacondaenv}/bin/transformix" &&
 # sudo rm "${anacondaenv}/lib/libANNlib-5.0.so"  &&
 # sudo rm "${anacondaenv}/lib/libANNlib-5.0.so.1" &&
