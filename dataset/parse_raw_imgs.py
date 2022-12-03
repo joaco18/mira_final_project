@@ -56,7 +56,7 @@ def main():
                 img_path, meta['size'], sitk.sitkInt16, meta['spacing'])
             # flip vertical axis:
             img_out_path = case_out_path / f'{img_path.stem}.nii.gz'
-            sitk.WriteImage(img, img_out_path)
+            sitk.WriteImage(img, str(img_out_path))
 
             # Generate landmarks mask
             landmarks = pd.read_csv(
@@ -69,7 +69,7 @@ def main():
             lm_mask = np.moveaxis(lm_mask, [0, 1, 2], [2, 1, 0])
 
             lm_out_path = case_out_path / f'{img_path.stem}_lm.nii.gz'
-            utils.save_img_from_array(lm_mask, img, lm_out_path)
+            utils.save_img_from_array_using_referece(lm_mask, img, str(lm_out_path))
 
             img_out_paths.append('/'.join(str(img_out_path).split('/')[-4:]))
             lm_out_paths.append('/'.join(str(lm_out_path).split('/')[-4:]))
