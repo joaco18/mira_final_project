@@ -1,5 +1,9 @@
-from neurite.tf.callbacks import ModelCheckpoint, ReduceLROnPlateau
+# from neurite.tf.callbacks import ModelCheckpoint, ReduceLROnPlateau
+from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
 from pystrum.pytools.plot import jitter
+import matplotlib
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
 import matplotlib
 # imports
 import os, sys
@@ -26,19 +30,29 @@ data_train = DirLabCOPD(
     cases=['all'],
     partitions=['train'],
     return_lm_mask=True,
-    normalization_cfg=None
+    normalization_cfg=None,
+    standardize_scan=True,
+    resize=True,
+    return_body_masks=True
 )
 sample_train = []
 for i in tqdm(range(len(data_train))):
     sample_train.append(data_train[i])
+
 train_generator = vxm_data_generator_cache(sample_train, batch_size=batch_size)
 
-data_test = DirLabCOPD(
-    cases=['all'],
-    partitions=['train'],
-    return_lm_mask=True,
-    normalization_cfg=None
-)
+in_sample, out_sample = next(train_generator)
+# visualize
+print(in_sample[1].max())
+_ = plt.hist(in_sample[1].reshape(-1), bins='auto')  # arguments are passed to np.histogram
+plt.title("Histogram with 'auto' bins")
+plt.show()
+
+
+images = [img[0, :, :, 81, 0] for img in in_sample + out_sample]
+titles = ['moving', 'fixed', 'moved ground-truth (fixed)', 'zeros']
+ne.plot.slices(images, titles=titles, cmaps=['gray'], do_colorbars=True)
+
 
 # build vxm network
 vxm_model = vxm.networks.VxmDense(vol_shape, nb_features, int_steps=0)
@@ -63,14 +77,4 @@ vxm_model.compile(optimizer='Adam', loss=losses, loss_weights=loss_weights)
 
 hist = vxm_model.fit(train_generator, epochs=100, steps_per_epoch=steps_per_epoch, verbose=1,
                      callbacks=[model_save_callback, reduce_on_plateau])
-
-in_sample, out_sample = next(train_generator)
-# visualize
-print(in_sample[1].max())
-_ = plt.hist(in_sample[1].reshape(-1), bins='auto')  # arguments are passed to np.histogram
-plt.title("Histogram with 'auto' bins")
-plt.show()
-images = [img[0, :, :, 81, 0] for img in in_sample + out_sample]
-titles = ['moving', 'fixed', 'moved ground-truth (fixed)', 'zeros']
-ne.plot.slices(images, titles=titles, cmaps=['gray'], do_colorbars=True)
 

@@ -8,7 +8,7 @@ from scipy.ndimage import zoom
 import preprocess.preprocess as preproc
 from utils import utils
 
-data_path = Path('__file__').resolve().parent / 'data'
+data_path = Path('../data')
 
 NORMALIZATION_CFG = {
     'norm_type': 'min-max',
@@ -21,17 +21,17 @@ NORMALIZATION_CFG = {
 
 class DirLabCOPD():
     def __init__(
-        self,
-        data_path: Path = data_path,
-        cases: List[str] = ['all'],
-        partitions: List[str] = ['train', 'val', 'test'],
-        return_lm_mask: bool = False,
-        normalization_cfg: dict = None,
-        return_imgs: bool = True,
-        return_lung_masks: bool = False,
-        return_body_masks: bool = False,
-        standardize_scan: bool = False,
-        resize: bool = False
+            self,
+            data_path: Path = data_path,
+            cases: List[str] = ['all'],
+            partitions: List[str] = ['train', 'val', 'test'],
+            return_lm_mask: bool = False,
+            normalization_cfg: dict = None,
+            return_imgs: bool = True,
+            return_lung_masks: bool = False,
+            return_body_masks: bool = False,
+            standardize_scan: bool = False,
+            resize: bool = False
     ):
         """
         Args:
@@ -114,7 +114,8 @@ class DirLabCOPD():
             sample['i_img'] = preproc.normalize(sample['i_img'], **self.normalization_cfg)
 
         if self.standardize_scan:
-            sample['i_img'] = preproc.normalize_scan(sample['i_img'])
+            sample['i_img'] = preproc.normalize_scan(sample['i_img'], sample['i_body_mask'])
+
         if self.resize:
             factor = 128 / sample['i_img'].shape[2]
             sample['i_img'] = zoom(sample['i_img'], (0.5, 0.5, factor))
@@ -152,7 +153,7 @@ class DirLabCOPD():
             sample['e_img'] = preproc.normalize(sample['e_img'], **self.normalization_cfg)
 
         if self.standardize_scan:
-            sample['e_img'] = preproc.normalize_scan(sample['e_img'])
+            sample['e_img'] = preproc.normalize_scan(sample['e_img'],sample['e_body_mask'])
         if self.resize:
             factor = 128 / sample['e_img'].shape[2]
             sample['e_img'] = zoom(sample['e_img'], (0.5, 0.5, factor))
@@ -185,21 +186,21 @@ def vxm_data_generator_cache(samples, batch_size=32):
     inputs:  moving [bs, H, W,D, 1], fixed image [bs, H, W,D, 1]
     outputs: moved image [bs, H, W,D, 1], zero-gradient [bs, H, W,D, 2]
     """
-    vol_shape = samples[0]['e_img'].shape[1:]  # extract data shape
-    ndims = len(vol_shape)
-
-    zero_phi = np.zeros([batch_size, *vol_shape, ndims])
-
     while True:
-        idx1 = np.random.randint(0, fixed_images.shape[0], size=batch_size)
+        idx1 = np.random.randint(0, len(samples), size=batch_size)
 
-        moving_images = [samples[i]['e_img'][..., np.newaxis] for i in idx1]
-        fixed_images = [samples[i]['i_img'][..., np.newaxis] for i in idx1]
+        moving_images = [samples[i]['e_img'][np.newaxis, ..., np.newaxis] for i in idx1]
+        fixed_images = [samples[i]['i_img'][np.newaxis, ..., np.newaxis] for i in idx1]
 
         moving_images = np.concatenate(moving_images, axis=0)
         fixed_images = np.concatenate(fixed_images, axis=0)
 
+        vol_shape = moving_images.shape[1:-1]  # extract data shape
+        ndims = len(vol_shape)
+
+        zero_phi = np.zeros((batch_size, *vol_shape, ndims))
+
         inputs = [moving_images, fixed_images]
         outputs = [fixed_images, zero_phi]
 
-        yield tuple(inputs), tuple(outputs)
+        yield inputs, outputs
