@@ -3,6 +3,7 @@ from typing import List
 import pandas as pd
 import SimpleITK as sitk
 import numpy as np
+from scipy.ndimage import zoom
 
 import preprocess.preprocess as preproc
 from utils import utils
@@ -20,14 +21,17 @@ NORMALIZATION_CFG = {
 
 class DirLabCOPD():
     def __init__(
-        self,
-        data_path: Path = data_path,
-        cases: List[str] = ['all'],
-        partitions: List[str] = ['train', 'val', 'test'],
-        return_lm_mask: bool = False,
-        normalization_cfg: dict = None,
-        return_imgs: bool = True,
-        return_lung_masks: bool = False
+            self,
+            data_path: Path = data_path,
+            cases: List[str] = ['all'],
+            partitions: List[str] = ['train', 'val', 'test'],
+            return_lm_mask: bool = False,
+            normalization_cfg: dict = None,
+            return_imgs: bool = True,
+            return_lung_masks: bool = False,
+            standardize_scan: bool = False,
+            resize: bool = False
+
     ):
         """
         Args:
@@ -49,6 +53,9 @@ class DirLabCOPD():
         self.partitions = partitions
         self.return_lm_mask = return_lm_mask
         self.normalization_cfg = normalization_cfg
+        self.standardize_scan = standardize_scan
+
+        self.resize = resize
         self.return_imgs = return_imgs
         self.return_lung_masks = return_lung_masks
 
@@ -96,6 +103,12 @@ class DirLabCOPD():
         if self.normalization_cfg is not None:
             sample['i_img'] = preproc.normalize(sample['i_img'], **self.normalization_cfg)
 
+        if self.standardize_scan:
+            sample['i_img'] = preproc.normalize_scan(sample['i_img'])
+        if self.resize:
+            factor = 128 / sample['i_img'].shape[2]
+            sample['i_img'] = zoom(sample['i_img'], (0.5, 0.5, factor))
+            sample['i_img_factor'] = factor
         # Landmarks
         if self.return_lm_mask:
             sample['i_landmark_mask'] = sitk.GetArrayFromImage(
@@ -120,6 +133,14 @@ class DirLabCOPD():
 
         if self.normalization_cfg is not None:
             sample['e_img'] = preproc.normalize(sample['e_img'], **self.normalization_cfg)
+
+        if self.standardize_scan:
+            sample['e_img'] = preproc.normalize_scan(sample['e_img'])
+        if self.resize:
+            factor = 128 / sample['e_img'].shape[2]
+            sample['e_img'] = zoom(sample['e_img'], (0.5, 0.5, factor))
+            sample['e_img_factor'] = factor
+
         # Landmarks
         if self.return_lm_mask:
             sample['e_landmark_mask'] = sitk.GetArrayFromImage(
@@ -136,3 +157,32 @@ class DirLabCOPD():
             sample[key] = df_row[key]
 
         return sample
+
+
+def vxm_data_generator_cache(samples, batch_size=32):
+    """
+    Generator that takes in data of size [N, H, W, D], and yields data for
+    our custom vxm model. Note that we need to provide numpy data for each
+    input, and each output.
+
+    inputs:  moving [bs, H, W,D, 1], fixed image [bs, H, W,D, 1]
+    outputs: moved image [bs, H, W,D, 1], zero-gradient [bs, H, W,D, 2]
+    """
+    vol_shape = samples[0]['e_img'].shape[1:]  # extract data shape
+    ndims = len(vol_shape)
+
+    zero_phi = np.zeros([batch_size, *vol_shape, ndims])
+
+    while True:
+        idx1 = np.random.randint(0, fixed_images.shape[0], size=batch_size)
+
+        moving_images = [samples[i]['e_img'][..., np.newaxis] for i in idx1]
+        fixed_images = [samples[i]['i_img'][..., np.newaxis] for i in idx1]
+
+        moving_images = np.concatenate(moving_images, axis=0)
+        fixed_images = np.concatenate(fixed_images, axis=0)
+
+        inputs = [moving_images, fixed_images]
+        outputs = [fixed_images, zero_phi]
+
+        yield tuple(inputs), tuple(outputs)

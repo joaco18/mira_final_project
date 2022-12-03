@@ -4,10 +4,9 @@ from typing import Tuple
 
 
 def normalize(
-    img: np.ndarray, norm_type: str = 'min-max', mask: np.ndarray = None,
-    max_val: int = 255, window: Tuple[int] = (-1024, 600), dtype: str = None
+        img: np.ndarray, norm_type: str = 'min-max', mask: np.ndarray = None,
+        max_val: int = 255, window: Tuple[int] = (-1024, 600), dtype: str = None
 ):
-
     if window is not None:
         img = np.clip(img, window[0], window[1])
     if norm_type == 'min-max':
@@ -20,7 +19,7 @@ def normalize(
 
 
 def min_max_norm(
-    img: np.ndarray, max_val: int = None, mask: np.ndarray = None, dtype: str = None
+        img: np.ndarray, max_val: int = None, mask: np.ndarray = None, dtype: str = None
 ) -> np.ndarray:
     """
     Scales images to be in range [0, 2**bits]
@@ -80,14 +79,14 @@ def get_lungs_mask_one_slice(img: np.ndarray, previous_mask: np.ndarray = None) 
     # If the body of the patient occupies the full width, add a margin to
     # connect the upper and lower background connected components in one.
     shape = labels.shape
-    border = np.ones((shape[0]+4, shape[1]+4)) * labels[0, 0]
+    border = np.ones((shape[0] + 4, shape[1] + 4)) * labels[0, 0]
     border[2:-2, 2:-2] = labels
     _, labels, stats, _ = cv2.connectedComponentsWithStats(border.astype('uint8'))
 
     # Ignore the CT scanner table and keep just the body.
     body = np.where(labels != labels[0, 0], 255, 0)
     _, b_labels, stats, _ = cv2.connectedComponentsWithStats(body.astype('uint8'))
-    body = np.where(b_labels == np.argmax(stats[1:, -1])+1, 1, 0)
+    body = np.where(b_labels == np.argmax(stats[1:, -1]) + 1, 1, 0)
 
     # Only keep the structures inside the body
     labels = labels * body
@@ -111,7 +110,7 @@ def get_lungs_mask_one_slice(img: np.ndarray, previous_mask: np.ndarray = None) 
 
     # Keep just the two largest connected components inside the body
     _, labels, stats, _ = cv2.connectedComponentsWithStats(labels.astype('uint8'))
-    idx = np.argsort(stats[1:, -1])[-2:]+1
+    idx = np.argsort(stats[1:, -1])[-2:] + 1
     if len(idx) != 0:
         lungs = np.where(labels == idx[0], 1, 0)
         if len(idx) > 1:
@@ -136,7 +135,7 @@ def get_lungs_mask(input_image: np.ndarray) -> np.ndarray:
         np.ndarray: binary [0, 255] mask of the lungs
     """
     lungs = np.zeros_like(input_image)
-    start = input_image.shape[0]//2
+    start = input_image.shape[0] // 2
     stops = [0, input_image.shape[0]]
     steps = [-1, 1]
     # Compute the slice segementation going from the middle slice to the top and bottom ones
@@ -151,3 +150,10 @@ def get_lungs_mask(input_image: np.ndarray) -> np.ndarray:
                     input_image[i, :, :], lungs[prev, :, :])
             prev = i
     return lungs
+
+
+def normalize_scan(scan, mask):
+    mean = np.mean(scan[scan != 0])
+    std = np.std(scan[scan != 0])
+    scan = (scan - mean) / std
+    return scan
