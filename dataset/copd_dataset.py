@@ -118,7 +118,7 @@ class DirLabCOPD():
             sample['i_img'] = preproc.normalize(sample['i_img'], **self.normalization_cfg)
 
         if self.standardize_scan:
-            sample['i_img'] = preproc.normalize_scan(sample['i_img'], sample['i_body_mask'])
+            sample['i_img'] = preproc.normalize_scan(sample['i_img'], sample['i_lung_mask'])
 
         if self.resize:
             factor = 128 / sample['i_img'].shape[2]
@@ -157,7 +157,7 @@ class DirLabCOPD():
             sample['e_img'] = preproc.normalize(sample['e_img'], **self.normalization_cfg)
 
         if self.standardize_scan:
-            sample['e_img'] = preproc.normalize_scan(sample['e_img'],sample['e_body_mask'])
+            sample['e_img'] = preproc.normalize_scan(sample['e_img'],sample['e_lung_mask'])
         if self.resize:
             factor = 128 / sample['e_img'].shape[2]
             sample['e_img'] = zoom(sample['e_img'], (0.5, 0.5, factor))
