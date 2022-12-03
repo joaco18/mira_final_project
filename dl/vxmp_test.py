@@ -1,5 +1,3 @@
-from neurite.tf.callbacks import ModelCheckpoint, ReduceLROnPlateau
-from pystrum.pytools.plot import jitter
 import matplotlib
 # imports
 import os, sys
@@ -8,13 +6,13 @@ import numpy as np
 import tensorflow as tf
 from scipy.ndimage import zoom
 from tqdm import tqdm
-import matplotlib.pyplot as plt
-
 from dataset.copd_dataset import DirLabCOPD, vxm_data_generator_cache
 from utils.metrics import target_registration_error
 
 assert tf.__version__.startswith('2.'), 'This tutorial assumes Tensorflow 2.0+'
 import voxelmorph as vxm
+import matplotlib.pyplot as plt
+
 import neurite as ne
 
 vol_shape = (256, 256, 128)

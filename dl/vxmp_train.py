@@ -1,10 +1,5 @@
 # from neurite.tf.callbacks import ModelCheckpoint, ReduceLROnPlateau
 from keras.callbacks import ModelCheckpoint, ReduceLROnPlateau
-from pystrum.pytools.plot import jitter
-import matplotlib
-matplotlib.use('TkAgg')
-import matplotlib.pyplot as plt
-import matplotlib
 # imports
 import os, sys
 # third party imports
@@ -18,6 +13,9 @@ from dataset.copd_dataset import DirLabCOPD, vxm_data_generator_cache
 assert tf.__version__.startswith('2.'), 'This tutorial assumes Tensorflow 2.0+'
 import voxelmorph as vxm
 import neurite as ne
+import matplotlib
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
 
 vol_shape = (256, 256, 128)
 nb_features = [

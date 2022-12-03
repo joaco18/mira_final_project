@@ -8,7 +8,7 @@ from scipy.ndimage import zoom
 import preprocess.preprocess as preproc
 from utils import utils
 
-data_path = Path('../data')
+data_path = Path('__file__').resolve().parent.parent / 'data'
 
 NORMALIZATION_CFG = {
     'norm_type': 'min-max',
