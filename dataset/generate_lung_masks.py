@@ -25,7 +25,7 @@ def main():
         i_lungs = get_lungs_mask(i_img)
         metadata = sample['ref_metadata']
         i_img_path = Path(sample['i_img_path'].replace('.nii.gz', '_lungs.nii.gz'))
-        save_img_from_array_using_metadata(i_lungs, metadata, i_img_path)
+        save_img_from_array_using_metadata(i_lungs.astype('uint8'), metadata, i_img_path)
 
         # Extract and save lungs mask for exhale data
         e_img = np.moveaxis(sample['e_img'], [0, 1, 2], [2, 1, 0])

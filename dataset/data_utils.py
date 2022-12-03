@@ -87,7 +87,8 @@ def generate_lm_mask(landmarks: np.ndarray, img_size: Tuple, dilate: bool = Fals
         (np.ndarray): landmarks mask
     """
     lm_mask = np.zeros(img_size, dtype=np.uint8)
-    lm_mask[landmarks[:, 0], landmarks[:, 1], landmarks[:, 2]] = 1
+    labels = np.arange(len(landmarks)) + 1
+    lm_mask[landmarks[:, 0], landmarks[:, 1], landmarks[:, 2]] = labels
     if dilate:
         se = morphology.ball(5)
         lm_mask = morphology.binary_dilation(lm_mask, se)

@@ -7,7 +7,6 @@ def normalize(
     img: np.ndarray, norm_type: str = 'min-max', mask: np.ndarray = None,
     max_val: int = 255, window: Tuple[int] = (-1024, 600), dtype: str = None
 ):
-
     if window is not None:
         img = np.clip(img, window[0], window[1])
     if norm_type == 'min-max':
@@ -95,6 +94,10 @@ def get_lungs_mask_one_slice(img: np.ndarray, previous_mask: np.ndarray = None) 
     # If the mask from a previous slide exists, use it to contraint cases in
     # wich the trachea is bigger than the lungs or some othe bottom slices artifact
     if previous_mask is not None:
+
+        # Select only lungs mask:
+        previous_mask = np.where(previous_mask == 2, 1, 0).astype('uint8')
+
         # Get the connected components inside the body and make it the same size of
         # the padded labels image
         _, labels, stats, _ = cv2.connectedComponentsWithStats(labels.astype('uint8'))
@@ -113,17 +116,22 @@ def get_lungs_mask_one_slice(img: np.ndarray, previous_mask: np.ndarray = None) 
     _, labels, stats, _ = cv2.connectedComponentsWithStats(labels.astype('uint8'))
     idx = np.argsort(stats[1:, -1])[-2:]+1
     if len(idx) != 0:
-        lungs = np.where(labels == idx[0], 1, 0)
+        lungs_ = np.where(labels == idx[0], 1, 0)
         if len(idx) > 1:
-            lungs = lungs + np.where(labels == idx[1], 1, 0)
+            lungs_ = lungs_ + np.where(labels == idx[1], 1, 0)
         # Perform whole filling with connected components
-        lungs = np.where(lungs == 0, 255, 0)
-        _, labels, stats, _ = cv2.connectedComponentsWithStats(lungs.astype('uint8'))
-        lungs = np.where(labels != labels[0, 0], 255, 0)
+        lungs_ = np.where(lungs_ == 0, 255, 0)
+        _, labels, stats, _ = cv2.connectedComponentsWithStats(lungs_.astype('uint8'))
+        lungs_ = np.where(labels != labels[0, 0], 255, 0)
     else:
-        lungs = labels.copy()
+        lungs_ = labels.copy()
+
+    # Include body in the masks for affine registration.
+    lungs = np.where(body != 0, 1, 0)
+    lungs[lungs_ != 0] = 2
+
     # Remove the padding
-    lungs = lungs[2:-2, 2:-2]
+    lungs = lungs[2:-2, 2:-2].astype('uint8')
     return lungs
 
 
@@ -150,4 +158,4 @@ def get_lungs_mask(input_image: np.ndarray) -> np.ndarray:
                 lungs[i, :, :] = get_lungs_mask_one_slice(
                     input_image[i, :, :], lungs[prev, :, :])
             prev = i
-    return lungs
+    return lungs.astype('uint8')
