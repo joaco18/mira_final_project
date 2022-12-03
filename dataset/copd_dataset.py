@@ -27,7 +27,8 @@ class DirLabCOPD():
         return_lm_mask: bool = False,
         normalization_cfg: dict = None,
         return_imgs: bool = True,
-        return_lung_masks: bool = False
+        return_lung_masks: bool = False,
+        return_body_masks: bool = False,
     ):
         """
         Args:
@@ -43,6 +44,8 @@ class DirLabCOPD():
             return_imgs (bool, optional): Whether to return the images. Defaults to True.
             return_lung_masks (bool, optional): Whether to return the lung_masks.
                 Defaults to False.
+            return_body_masks (bool, optional): Whether to return the body_masks.
+                Defaults to False.
         """
         self.data_path = data_path
         self.cases = cases
@@ -51,9 +54,10 @@ class DirLabCOPD():
         self.normalization_cfg = normalization_cfg
         self.return_imgs = return_imgs
         self.return_lung_masks = return_lung_masks
+        self.return_body_masks = return_body_masks
 
         # Read the dataset csv
-        self.df = pd.read_csv(data_path / 'dir_lab_copd' / 'dir_lab_copd.csv', index_col=0)
+        self.df = pd.read_csv(self.data_path / 'dir_lab_copd' / 'dir_lab_copd.csv', index_col=0)
 
         # Filter by cases selection
         if 'all' not in self.cases:
@@ -91,7 +95,14 @@ class DirLabCOPD():
         if self.return_lung_masks:
             sample['i_lung_mask'] = sitk.GetArrayFromImage(sitk.ReadImage(
                 str(case_path / f'{case}_iBHCT_lungs.nii.gz')))
+            sample['i_lung_mask'] = np.where(sample['i_lung_mask'] == 2, 255, 0)
             sample['i_lung_mask'] = np.moveaxis(sample['i_lung_mask'], [0, 1, 2], [2, 1, 0])
+
+        if self.return_body_masks:
+            sample['i_body_mask'] = sitk.GetArrayFromImage(sitk.ReadImage(
+                str(case_path / f'{case}_eBHCT_lungs.nii.gz')))
+            sample['i_body_mask'] = np.where(sample['i_body_mask'] != 0, 255, 0)
+            sample['i_body_mask'] = np.moveaxis(sample['i_body_mask'], [0, 1, 2], [2, 1, 0])
 
         if self.normalization_cfg is not None:
             sample['i_img'] = preproc.normalize(sample['i_img'], **self.normalization_cfg)
@@ -116,7 +127,14 @@ class DirLabCOPD():
         if self.return_lung_masks:
             sample['e_lung_mask'] = sitk.GetArrayFromImage(sitk.ReadImage(
                 str(case_path / f'{case}_eBHCT_lungs.nii.gz')))
+            sample['e_lung_mask'] = np.where(sample['e_lung_mask'] == 2, 255, 0)
             sample['e_lung_mask'] = np.moveaxis(sample['e_lung_mask'], [0, 1, 2], [2, 1, 0])
+
+        if self.return_body_masks:
+            sample['e_body_mask'] = sitk.GetArrayFromImage(sitk.ReadImage(
+                str(case_path / f'{case}_eBHCT_lungs.nii.gz')))
+            sample['e_body_mask'] = np.where(sample['e_body_mask'] != 0, 255, 0)
+            sample['e_body_mask'] = np.moveaxis(sample['e_body_mask'], [0, 1, 2], [2, 1, 0])
 
         if self.normalization_cfg is not None:
             sample['e_img'] = preproc.normalize(sample['e_img'], **self.normalization_cfg)
