@@ -49,6 +49,10 @@ class DirLabCOPD():
                 Defaults to False.
             return_body_masks (bool, optional): Whether to return the body_masks.
                 Defaults to False.
+            standardize_scan (bool, optional): Whether to standardize the scan with mean and std.
+                Defaults to False.
+            resize (bool, optional): Whether to zoom data to have data of shape 256,256,128.
+                Defaults to False.
         """
         self.data_path = data_path
         self.cases = cases
