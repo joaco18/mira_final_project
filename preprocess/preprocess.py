@@ -159,3 +159,10 @@ def get_lungs_mask(input_image: np.ndarray) -> np.ndarray:
                     input_image[i, :, :], lungs[prev, :, :])
             prev = i
     return lungs.astype('uint8')
+
+
+def normalize_scan(scan, mask):
+    mean = np.mean(scan[scan != 0])
+    std = np.std(scan[scan != 0])
+    scan = (scan - mean) / std
+    return scan
