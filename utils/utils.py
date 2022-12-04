@@ -1,6 +1,7 @@
 from pathlib import Path
 import SimpleITK as sitk
 import numpy as np
+import pandas as pd
 
 
 def save_img_from_array_using_referece(
@@ -94,3 +95,13 @@ def get_landmarks_from_array(lm_mask: np.ndarray) -> np.ndarray:
             x, y, z = np.where(lm_mask == i)
             locs[i, :] = np.array([x[0], y[0], z[0]])
     return locs
+
+
+def get_landmarks_array_from_txt_file(lm_out_filepath: Path):
+    """Parses the resulting txt from elastix to an array of landmark points [poits, [x,y,z]]"""
+    landmarks = pd.read_csv(lm_out_filepath, header=None, sep='\t |\t', engine='python')
+    landmarks.columns = [
+        'point', 'idx', 'input_index', 'input_point', 'ouput_index', 'ouput_point', 'def']
+    landmarks = [lm[-4:-1] for lm in np.asarray(landmarks.ouput_index.str.split(' '))]
+    landmarks = np.asarray(landmarks).astype('int')
+    return landmarks
