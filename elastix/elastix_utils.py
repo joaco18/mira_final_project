@@ -3,7 +3,6 @@ import subprocess
 import SimpleITK as sitk
 from pathlib import Path
 from typing import List
-import shutil
 
 
 def elastix_wrapper(
