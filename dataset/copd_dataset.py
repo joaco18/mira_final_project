@@ -3,11 +3,12 @@ from typing import List
 import pandas as pd
 import SimpleITK as sitk
 import numpy as np
+from scipy.ndimage import zoom
 
 import preprocess.preprocess as preproc
 from utils import utils
 
-data_path = Path('__file__').resolve().parent / 'data'
+data_path = Path('__file__').resolve().parent.parent / 'data'
 
 NORMALIZATION_CFG = {
     'norm_type': 'min-max',
@@ -20,15 +21,17 @@ NORMALIZATION_CFG = {
 
 class DirLabCOPD():
     def __init__(
-        self,
-        data_path: Path = data_path,
-        cases: List[str] = ['all'],
-        partitions: List[str] = ['train', 'val', 'test'],
-        return_lm_mask: bool = False,
-        normalization_cfg: dict = None,
-        return_imgs: bool = True,
-        return_lung_masks: bool = False,
-        return_body_masks: bool = False,
+            self,
+            data_path: Path = data_path,
+            cases: List[str] = ['all'],
+            partitions: List[str] = ['train', 'val', 'test'],
+            return_lm_mask: bool = False,
+            normalization_cfg: dict = None,
+            return_imgs: bool = True,
+            return_lung_masks: bool = False,
+            return_body_masks: bool = False,
+            standardize_scan: bool = False,
+            resize: bool = False
     ):
         """
         Args:
@@ -46,12 +49,19 @@ class DirLabCOPD():
                 Defaults to False.
             return_body_masks (bool, optional): Whether to return the body_masks.
                 Defaults to False.
+            standardize_scan (bool, optional): Whether to standardize the scan with mean and std.
+                Defaults to False.
+            resize (bool, optional): Whether to zoom data to have data of shape 256,256,128.
+                Defaults to False.
         """
         self.data_path = data_path
         self.cases = cases
         self.partitions = partitions
         self.return_lm_mask = return_lm_mask
         self.normalization_cfg = normalization_cfg
+        self.standardize_scan = standardize_scan
+
+        self.resize = resize
         self.return_imgs = return_imgs
         self.return_lung_masks = return_lung_masks
         self.return_body_masks = return_body_masks
@@ -107,6 +117,13 @@ class DirLabCOPD():
         if self.normalization_cfg is not None:
             sample['i_img'] = preproc.normalize(sample['i_img'], **self.normalization_cfg)
 
+        if self.standardize_scan:
+            sample['i_img'] = preproc.normalize_scan(sample['i_img'], sample['i_lung_mask'])
+
+        if self.resize:
+            factor = 128 / sample['i_img'].shape[2]
+            sample['i_img'] = zoom(sample['i_img'], (0.5, 0.5, factor))
+            sample['i_img_factor'] = factor
         # Landmarks
         if self.return_lm_mask:
             sample['i_landmark_mask'] = sitk.GetArrayFromImage(
@@ -138,6 +155,14 @@ class DirLabCOPD():
 
         if self.normalization_cfg is not None:
             sample['e_img'] = preproc.normalize(sample['e_img'], **self.normalization_cfg)
+
+        if self.standardize_scan:
+            sample['e_img'] = preproc.normalize_scan(sample['e_img'],sample['e_lung_mask'])
+        if self.resize:
+            factor = 128 / sample['e_img'].shape[2]
+            sample['e_img'] = zoom(sample['e_img'], (0.5, 0.5, factor))
+            sample['e_img_factor'] = factor
+
         # Landmarks
         if self.return_lm_mask:
             sample['e_landmark_mask'] = sitk.GetArrayFromImage(
@@ -154,3 +179,32 @@ class DirLabCOPD():
             sample[key] = df_row[key]
 
         return sample
+
+
+def vxm_data_generator_cache(samples, batch_size=32):
+    """
+    Generator that takes in data of size [N, H, W, D], and yields data for
+    our custom vxm model. Note that we need to provide numpy data for each
+    input, and each output.
+
+    inputs:  moving [bs, H, W,D, 1], fixed image [bs, H, W,D, 1]
+    outputs: moved image [bs, H, W,D, 1], zero-gradient [bs, H, W,D, 2]
+    """
+    while True:
+        idx1 = np.random.randint(0, len(samples), size=batch_size)
+
+        moving_images = [samples[i]['e_img'][np.newaxis, ..., np.newaxis] for i in idx1]
+        fixed_images = [samples[i]['i_img'][np.newaxis, ..., np.newaxis] for i in idx1]
+
+        moving_images = np.concatenate(moving_images, axis=0)
+        fixed_images = np.concatenate(fixed_images, axis=0)
+
+        vol_shape = moving_images.shape[1:-1]  # extract data shape
+        ndims = len(vol_shape)
+
+        zero_phi = np.zeros((batch_size, *vol_shape, ndims))
+
+        inputs = [moving_images, fixed_images]
+        outputs = [fixed_images, zero_phi]
+
+        yield inputs, outputs
