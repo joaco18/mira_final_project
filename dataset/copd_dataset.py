@@ -204,18 +204,22 @@ class DirLabCOPD():
 
 def transform_sample(sample, transforms):
     # transform e_img or i_img by probability of 0.5
+    sample_new = {}
     if np.random.rand() > 0.5:
         transformed_sample = transforms(
             {'image': sample['e_img'][np.newaxis, ...], 'label': sample['e_lung_mask'][np.newaxis, ...]})
-        sample['e_img'] = transformed_sample['image'][0]
-        sample['e_lung_mask'] = transformed_sample['label'][0]
+        sample_new['e_img'] = transformed_sample['image'][0]
+        sample_new['e_lung_mask'] = transformed_sample['label'][0]
+        sample_new['i_img'] = sample['i_img']
 
     else:
         transformed_sample = transforms(
             {'image': sample['i_img'][np.newaxis, ...], 'label': sample['i_lung_mask'][np.newaxis, ...]})
-        sample['i_img'] = transformed_sample['image'][0]
-        sample['i_lung_mask'] = transformed_sample['label'][0]
-    return sample
+        sample_new['i_img'] = transformed_sample['image'][0]
+        sample_new['i_lung_mask'] = transformed_sample['label'][0]
+        sample_new['e_img'] = sample['e_img']
+
+    return sample_new
 
 
 def vxm_data_generator_cache(samples, batch_size=32, transforms=None, use_labels=False):
@@ -244,8 +248,8 @@ def vxm_data_generator_cache(samples, batch_size=32, transforms=None, use_labels
         zero_phi = np.zeros((batch_size, *vol_shape, ndims))
 
         if use_labels:
-            moving_masks = [samples[i]['e_lung_mask'][np.newaxis, ..., np.newaxis] for i in idx1]
-            fixed_masks = [samples[i]['i_lung_mask'][np.newaxis, ..., np.newaxis] for i in idx1]
+            moving_masks = [(samples[i]['e_lung_mask'] == 255)[np.newaxis, ..., np.newaxis] for i in idx1]
+            fixed_masks = [(samples[i]['i_lung_mask'] == 255)[np.newaxis, ..., np.newaxis] for i in idx1]
             moving_masks = np.concatenate(moving_masks, axis=0)
             fixed_masks = np.concatenate(fixed_masks, axis=0)
             inputs = [moving_images, fixed_images, moving_masks]
