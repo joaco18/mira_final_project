@@ -124,6 +124,8 @@ class DirLabCOPD():
             factor = 128 / sample['i_img'].shape[2]
             sample['i_img'] = zoom(sample['i_img'], (0.5, 0.5, factor))
             sample['i_img_factor'] = factor
+            sample['i_lung_mask'] = zoom(sample['i_lung_mask'], (0.5, 0.5, factor))
+
         # Landmarks
         if self.return_lm_mask:
             sample['i_landmark_mask'] = sitk.GetArrayFromImage(
@@ -157,10 +159,12 @@ class DirLabCOPD():
             sample['e_img'] = preproc.normalize(sample['e_img'], **self.normalization_cfg)
 
         if self.standardize_scan:
-            sample['e_img'] = preproc.normalize_scan(sample['e_img'],sample['e_lung_mask'])
+            sample['e_img'] = preproc.normalize_scan(sample['e_img'], sample['e_lung_mask'])
+
         if self.resize:
             factor = 128 / sample['e_img'].shape[2]
             sample['e_img'] = zoom(sample['e_img'], (0.5, 0.5, factor))
+            sample['e_lung_mask'] = zoom(sample['e_lung_mask'], (0.5, 0.5, factor))
             sample['e_img_factor'] = factor
 
         # Landmarks
@@ -181,7 +185,7 @@ class DirLabCOPD():
         return sample
 
 
-def vxm_data_generator_cache(samples, batch_size=32):
+def vxm_data_generator_cache(samples, batch_size=32, use_labels=False):
     """
     Generator that takes in data of size [N, H, W, D], and yields data for
     our custom vxm model. Note that we need to provide numpy data for each
@@ -204,7 +208,15 @@ def vxm_data_generator_cache(samples, batch_size=32):
 
         zero_phi = np.zeros((batch_size, *vol_shape, ndims))
 
-        inputs = [moving_images, fixed_images]
-        outputs = [fixed_images, zero_phi]
+        if use_labels:
+            moving_masks = [samples[i]['e_lung_mask'][np.newaxis, ..., np.newaxis] for i in idx1]
+            fixed_masks = [samples[i]['i_lung_mask'][np.newaxis, ..., np.newaxis] for i in idx1]
+            moving_masks = np.concatenate(moving_masks, axis=0)
+            fixed_masks = np.concatenate(fixed_masks, axis=0)
+            inputs = [moving_images, fixed_images, moving_masks]
+            outputs = [fixed_images, zero_phi, fixed_masks]
+        else:
+            inputs = [moving_images, fixed_images]
+            outputs = [fixed_images, zero_phi]
 
         yield inputs, outputs
