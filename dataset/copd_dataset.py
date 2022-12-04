@@ -3,12 +3,28 @@ from typing import List
 import pandas as pd
 import SimpleITK as sitk
 import numpy as np
+from monai.transforms import Rand3DElasticd, RandAffined, Spacingd, Compose
 from scipy.ndimage import zoom
 
 import preprocess.preprocess as preproc
 from utils import utils
 
 data_path = Path('__file__').resolve().parent.parent / 'data'
+# data_path = Path('../data')
+
+rand_elastic = Rand3DElasticd(
+    keys=["image", "label"],
+    mode=("bilinear", "nearest"),
+    prob=0.8,
+    sigma_range=(5, 8),
+    magnitude_range=(100, 200),
+    spatial_size=(256, 256, 128),
+    translate_range=(50, 50, 2),
+    rotate_range=(np.pi / 36, np.pi / 36, np.pi),
+    scale_range=(0.15, 0.15, 0.15),
+    padding_mode="border",
+)
+train_transform = Compose([rand_elastic])
 
 NORMALIZATION_CFG = {
     'norm_type': 'min-max',
@@ -31,7 +47,7 @@ class DirLabCOPD():
             return_lung_masks: bool = False,
             return_body_masks: bool = False,
             standardize_scan: bool = False,
-            resize: bool = False
+            resize: bool = False,
     ):
         """
         Args:
@@ -99,18 +115,19 @@ class DirLabCOPD():
         sample['i_img_path'] = str(case_path / f'{case}_iBHCT.nii.gz')
         if self.return_imgs:
             sample['i_img'] = sitk.ReadImage(sample['i_img_path'])
+
             sample['ref_metadata'] = utils.extract_metadata(sample['i_img'])
             sample['i_img'] = sitk.GetArrayFromImage(sample['i_img'])
             sample['i_img'] = np.moveaxis(sample['i_img'], [0, 1, 2], [2, 1, 0])
         if self.return_lung_masks:
             sample['i_lung_mask'] = sitk.GetArrayFromImage(sitk.ReadImage(
                 str(case_path / f'{case}_iBHCT_lungs.nii.gz')))
-            sample['i_lung_mask'] = np.where(sample['i_lung_mask'] == 2, 255, 0)
+            # sample['i_lung_mask'] = np.where(sample['i_lung_mask'] == 2, 255, 0)
             sample['i_lung_mask'] = np.moveaxis(sample['i_lung_mask'], [0, 1, 2], [2, 1, 0])
 
         if self.return_body_masks:
             sample['i_body_mask'] = sitk.GetArrayFromImage(sitk.ReadImage(
-                str(case_path / f'{case}_eBHCT_lungs.nii.gz')))
+                str(case_path / f'{case}_iBHCT_lungs.nii.gz')))
             sample['i_body_mask'] = np.where(sample['i_body_mask'] != 0, 255, 0)
             sample['i_body_mask'] = np.moveaxis(sample['i_body_mask'], [0, 1, 2], [2, 1, 0])
 
@@ -146,7 +163,7 @@ class DirLabCOPD():
         if self.return_lung_masks:
             sample['e_lung_mask'] = sitk.GetArrayFromImage(sitk.ReadImage(
                 str(case_path / f'{case}_eBHCT_lungs.nii.gz')))
-            sample['e_lung_mask'] = np.where(sample['e_lung_mask'] == 2, 255, 0)
+            # sample['e_lung_mask'] = np.where(sample['e_lung_mask'] == 2, 255, 0)
             sample['e_lung_mask'] = np.moveaxis(sample['e_lung_mask'], [0, 1, 2], [2, 1, 0])
 
         if self.return_body_masks:
@@ -185,7 +202,25 @@ class DirLabCOPD():
         return sample
 
 
-def vxm_data_generator_cache(samples, batch_size=32, use_labels=False):
+def transform_sample(sample, transforms):
+    # transform e_img or i_img by probability of 0.5
+    if np.random.rand() > 0.5:
+        transformed_sample = transforms(
+            {'image': sample['e_img'][np.newaxis, ...], 'label': sample['e_lung_mask'][np.newaxis, ...]})
+        sample['e_img'] = transformed_sample['image'][0]
+        sample['e_lung_mask'] = transformed_sample['label'][0]
+        sample['i_img'] = sample['i_img'][np.newaxis, ...]
+
+    else:
+        transformed_sample = transforms(
+            {'image': sample['i_img'][np.newaxis, ...], 'label': sample['i_lung_mask'][np.newaxis, ...]})
+        sample['i_img'] = transformed_sample['image'][0]
+        sample['i_lung_mask'] = transformed_sample['label'][0]
+        sample['e_img'] = sample['e_img'][np.newaxis, ...]
+    return sample
+
+
+def vxm_data_generator_cache(samples, batch_size=32, transforms=None, use_labels=False):
     """
     Generator that takes in data of size [N, H, W, D], and yields data for
     our custom vxm model. Note that we need to provide numpy data for each
@@ -197,8 +232,10 @@ def vxm_data_generator_cache(samples, batch_size=32, use_labels=False):
     while True:
         idx1 = np.random.randint(0, len(samples), size=batch_size)
 
-        moving_images = [samples[i]['e_img'][np.newaxis, ..., np.newaxis] for i in idx1]
-        fixed_images = [samples[i]['i_img'][np.newaxis, ..., np.newaxis] for i in idx1]
+        chosen_samples = [transform_sample(samples[i], transforms) if transforms else samples[i] for i in idx1]
+
+        moving_images = [sample['e_img'][np.newaxis, ..., np.newaxis] for sample in chosen_samples]
+        fixed_images = [sample['i_img'][np.newaxis, ..., np.newaxis] for sample in chosen_samples]
 
         moving_images = np.concatenate(moving_images, axis=0)
         fixed_images = np.concatenate(fixed_images, axis=0)

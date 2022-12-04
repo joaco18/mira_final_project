@@ -8,7 +8,7 @@ import tensorflow as tf
 from tqdm import tqdm
 import matplotlib.pyplot as plt
 
-from dataset.copd_dataset import DirLabCOPD, vxm_data_generator_cache
+from dataset.copd_dataset import DirLabCOPD, vxm_data_generator_cache,train_transform
 
 assert tf.__version__.startswith('2.'), 'This tutorial assumes Tensorflow 2.0+'
 import voxelmorph as vxm
@@ -31,13 +31,13 @@ data_train = DirLabCOPD(
     normalization_cfg=None,
     standardize_scan=True,
     resize=True,
-    return_body_masks=True
+    return_lung_masks=True
 )
 sample_train = []
 for i in tqdm(range(len(data_train))):
     sample_train.append(data_train[i])
 
-train_generator = vxm_data_generator_cache(sample_train, batch_size=batch_size)
+train_generator = vxm_data_generator_cache(sample_train,transforms=train_transform,batch_size=batch_size)
 
 in_sample, out_sample = next(train_generator)
 # visualize
