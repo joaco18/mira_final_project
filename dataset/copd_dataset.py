@@ -209,14 +209,12 @@ def transform_sample(sample, transforms):
             {'image': sample['e_img'][np.newaxis, ...], 'label': sample['e_lung_mask'][np.newaxis, ...]})
         sample['e_img'] = transformed_sample['image'][0]
         sample['e_lung_mask'] = transformed_sample['label'][0]
-        sample['i_img'] = sample['i_img'][np.newaxis, ...]
 
     else:
         transformed_sample = transforms(
             {'image': sample['i_img'][np.newaxis, ...], 'label': sample['i_lung_mask'][np.newaxis, ...]})
         sample['i_img'] = transformed_sample['image'][0]
         sample['i_lung_mask'] = transformed_sample['label'][0]
-        sample['e_img'] = sample['e_img'][np.newaxis, ...]
     return sample
 
 

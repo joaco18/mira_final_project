@@ -11,3 +11,4 @@ seaborn == 0.12.0
 tqdm == 4.64.1
 SimpleITK-SimpleElastix == 2.0.0rc2.dev909
 PyYAML == 6.0
+monai
