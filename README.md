@@ -54,7 +54,7 @@ export PYTHONPATH="${PYTHONPATH}:[PATH/mira_final_project/]"
     
     To process the images run:
     ```bash
-    python parse_raw_imgs.py
+    python dataset/parse_raw_imgs.py
     ```
 
 - Option 2: Get the processed images:
