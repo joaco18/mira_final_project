@@ -3,6 +3,11 @@ data/
 elastix/elastix-5.0.0*
 experiments/elastix/Par*
 experiments/elastix/anw*
+ants/ANTs
+ants/build
+ants/install
+ants/Output
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
