@@ -248,8 +248,9 @@ def vxm_data_generator_cache(samples, batch_size=32, transforms=None, use_labels
         zero_phi = np.zeros((batch_size, *vol_shape, ndims))
 
         if use_labels:
-            moving_masks = [(samples[i]['e_lung_mask'] == 255)[np.newaxis, ..., np.newaxis] for i in idx1]
-            fixed_masks = [(samples[i]['i_lung_mask'] == 255)[np.newaxis, ..., np.newaxis] for i in idx1]
+            downsize=2
+            moving_masks = [(samples[i]['e_lung_mask']/255.0)[np.newaxis, ::downsize, ::downsize, ::downsize, np.newaxis] for i in idx1]
+            fixed_masks = [(samples[i]['i_lung_mask']/255.0)[np.newaxis, ::downsize, ::downsize, ::downsize, np.newaxis] for i in idx1]
             moving_masks = np.concatenate(moving_masks, axis=0)
             fixed_masks = np.concatenate(fixed_masks, axis=0)
             inputs = [moving_images, fixed_images, moving_masks]
