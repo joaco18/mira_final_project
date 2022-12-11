@@ -1,0 +1,68 @@
+{
+    "synonly_mse_nomask": {
+        "copd1": {
+            "mean_tre": 15.25,
+            "std_tre": 7.93,
+            "time": 276.9923367500305
+        },
+        "copd2": {
+            "mean_tre": 17.68,
+            "std_tre": 6.44,
+            "time": 198.89383792877197
+        },
+        "copd3": {
+            "mean_tre": 8.1,
+            "std_tre": 3.76,
+            "time": 240.47665739059448
+        },
+        "copd4": {
+            "mean_tre": 18.95,
+            "std_tre": 5.38,
+            "time": 390.7443335056305
+        }
+    },
+    "synonly_mi_nomask": {
+        "copd1": {
+            "mean_tre": 11.61,
+            "std_tre": 6.75,
+            "time": 131.45556569099426
+        },
+        "copd2": {
+            "mean_tre": 16.19,
+            "std_tre": 6.05,
+            "time": 105.85038948059082
+        },
+        "copd3": {
+            "mean_tre": 6.5,
+            "std_tre": 3.87,
+            "time": 129.4522671699524
+        },
+        "copd4": {
+            "mean_tre": 18.3,
+            "std_tre": 6.06,
+            "time": 139.96643829345703
+        }
+    },
+    "synonly_demons_nomask": {
+        "copd1": {
+            "mean_tre": 19.91,
+            "std_tre": 10.23,
+            "time": 241.62739825248718
+        },
+        "copd2": {
+            "mean_tre": 22.84,
+            "std_tre": 11.04,
+            "time": 175.9004271030426
+        },
+        "copd3": {
+            "mean_tre": 17.41,
+            "std_tre": 9.33,
+            "time": 185.6550052165985
+        },
+        "copd4": {
+            "mean_tre": 19.77,
+            "std_tre": 7.76,
+            "time": 164.82798957824707
+        }
+    }
+}
