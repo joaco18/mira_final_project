@@ -1,68 +1,222 @@
 {
     "synonly_mse_nomask": {
         "copd1": {
-            "mean_tre": 15.25,
-            "std_tre": 7.93,
-            "time": 276.9923367500305
+            "mean_tre": 12.51,
+            "std_tre": 6.95,
+            "time": 345.604238986969
         },
         "copd2": {
-            "mean_tre": 17.68,
-            "std_tre": 6.44,
-            "time": 198.89383792877197
+            "mean_tre": 16.85,
+            "std_tre": 6.32,
+            "time": 233.39152812957764
         },
         "copd3": {
-            "mean_tre": 8.1,
-            "std_tre": 3.76,
-            "time": 240.47665739059448
+            "mean_tre": 6.76,
+            "std_tre": 3.46,
+            "time": 352.56587982177734
         },
         "copd4": {
-            "mean_tre": 18.95,
-            "std_tre": 5.38,
-            "time": 390.7443335056305
+            "mean_tre": 15.48,
+            "std_tre": 4.45,
+            "time": 431.14112067222595
         }
     },
     "synonly_mi_nomask": {
         "copd1": {
-            "mean_tre": 11.61,
-            "std_tre": 6.75,
-            "time": 131.45556569099426
+            "mean_tre": 8.43,
+            "std_tre": 5.76,
+            "time": 175.4749720096588
         },
         "copd2": {
-            "mean_tre": 16.19,
-            "std_tre": 6.05,
-            "time": 105.85038948059082
+            "mean_tre": 12.48,
+            "std_tre": 6.19,
+            "time": 142.5781328678131
         },
         "copd3": {
-            "mean_tre": 6.5,
-            "std_tre": 3.87,
-            "time": 129.4522671699524
+            "mean_tre": 5.46,
+            "std_tre": 3.64,
+            "time": 156.36799883842468
         },
         "copd4": {
-            "mean_tre": 18.3,
-            "std_tre": 6.06,
-            "time": 139.96643829345703
+            "mean_tre": 14.43,
+            "std_tre": 5.17,
+            "time": 184.9637486934662
         }
     },
     "synonly_demons_nomask": {
         "copd1": {
-            "mean_tre": 19.91,
-            "std_tre": 10.23,
-            "time": 241.62739825248718
+            "mean_tre": 16.44,
+            "std_tre": 8.24,
+            "time": 287.5064046382904
         },
         "copd2": {
-            "mean_tre": 22.84,
-            "std_tre": 11.04,
-            "time": 175.9004271030426
+            "mean_tre": 21.76,
+            "std_tre": 10.39,
+            "time": 200.0733950138092
         },
         "copd3": {
-            "mean_tre": 17.41,
-            "std_tre": 9.33,
-            "time": 185.6550052165985
+            "mean_tre": 15.82,
+            "std_tre": 9.02,
+            "time": 278.3817276954651
         },
         "copd4": {
-            "mean_tre": 19.77,
-            "std_tre": 7.76,
-            "time": 164.82798957824707
+            "mean_tre": 17.88,
+            "std_tre": 7.68,
+            "time": 252.12780666351318
+        }
+    },
+    "synonly_mi_mask": {
+        "copd1": {
+            "mean_tre": 11.56,
+            "std_tre": 8.22,
+            "time": 220.21566653251648
+        },
+        "copd2": {
+            "mean_tre": 10.24,
+            "std_tre": 6.0,
+            "time": 153.60014748573303
+        },
+        "copd3": {
+            "mean_tre": 4.11,
+            "std_tre": 3.84,
+            "time": 141.1744303703308
+        },
+        "copd4": {
+            "mean_tre": 21.95,
+            "std_tre": 7.1,
+            "time": 160.09635162353516
+        }
+    },
+    "syn_mi": {
+        "copd1": {
+            "mean_tre": 8.09,
+            "std_tre": 4.86,
+            "time": 208.0026514530182
+        },
+        "copd2": {
+            "mean_tre": 14.48,
+            "std_tre": 6.56,
+            "time": 168.66385436058044
+        },
+        "copd3": {
+            "mean_tre": 5.91,
+            "std_tre": 3.8,
+            "time": 212.61056995391846
+        },
+        "copd4": {
+            "mean_tre": 13.45,
+            "std_tre": 4.15,
+            "time": 218.4245090484619
+        }
+    },
+    "elastic_syn_mi": {
+        "copd1": {
+            "mean_tre": 8.09,
+            "std_tre": 4.95,
+            "time": 227.88413667678833
+        },
+        "copd2": {
+            "mean_tre": 14.29,
+            "std_tre": 6.53,
+            "time": 187.3616955280304
+        },
+        "copd3": {
+            "mean_tre": 5.94,
+            "std_tre": 3.82,
+            "time": 222.88166570663452
+        },
+        "copd4": {
+            "mean_tre": 13.02,
+            "std_tre": 4.26,
+            "time": 248.80757975578308
+        }
+    },
+    "syn_mi_16_sampl": {
+        "copd1": {
+            "mean_tre": 8.15,
+            "std_tre": 4.62,
+            "time": 281.4879062175751
+        },
+        "copd2": {
+            "mean_tre": 13.67,
+            "std_tre": 6.47,
+            "time": 138.95506763458252
+        },
+        "copd3": {
+            "mean_tre": 5.74,
+            "std_tre": 3.58,
+            "time": 195.87274312973022
+        },
+        "copd4": {
+            "mean_tre": 10.62,
+            "std_tre": 4.14,
+            "time": 226.96183490753174
+        }
+    },
+    "syn_mi_8_sampl": {
+        "copd1": {
+            "mean_tre": 8.7,
+            "std_tre": 4.62,
+            "time": 166.0295374393463
+        },
+        "copd2": {
+            "mean_tre": 15.0,
+            "std_tre": 6.29,
+            "time": 128.35278725624084
+        },
+        "copd3": {
+            "mean_tre": 5.56,
+            "std_tre": 3.21,
+            "time": 216.33605098724365
+        },
+        "copd4": {
+            "mean_tre": 9.91,
+            "std_tre": 4.19,
+            "time": 223.71764755249023
+        }
+    },
+    "syn_mi_more_it": {
+        "copd1": {
+            "mean_tre": 8.98,
+            "std_tre": 4.64,
+            "time": 128.14526414871216
+        },
+        "copd2": {
+            "mean_tre": 14.96,
+            "std_tre": 6.95,
+            "time": 92.50809049606323
+        },
+        "copd3": {
+            "mean_tre": 5.45,
+            "std_tre": 3.7,
+            "time": 116.55970191955566
+        },
+        "copd4": {
+            "mean_tre": 9.46,
+            "std_tre": 4.92,
+            "time": 143.2901108264923
+        }
+    },
+    "syn_GC": {
+        "copd1": {
+            "mean_tre": 11.83,
+            "std_tre": 5.02,
+            "time": 235.9762613773346
+        },
+        "copd2": {
+            "mean_tre": 19.62,
+            "std_tre": 6.14,
+            "time": 193.0841076374054
+        },
+        "copd3": {
+            "mean_tre": 11.11,
+            "std_tre": 3.89,
+            "time": 258.3237783908844
+        },
+        "copd4": {
+            "mean_tre": 24.78,
+            "std_tre": 5.67,
+            "time": 262.4206507205963
         }
     }
 }
