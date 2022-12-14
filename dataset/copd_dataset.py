@@ -145,7 +145,8 @@ class DirLabCOPD():
             factor = 128 / sample['i_img'].shape[2]
             sample['i_img'] = zoom(sample['i_img'], (0.5, 0.5, factor))
             sample['i_img_factor'] = factor
-            sample['i_lung_mask'] = zoom(sample['i_lung_mask'], (0.5, 0.5, factor))
+            if self.return_lung_masks:
+                sample['i_lung_mask'] = zoom(sample['i_lung_mask'], (0.5, 0.5, factor))
 
         # Landmarks
         if self.return_lm_mask:
@@ -186,8 +187,9 @@ class DirLabCOPD():
         if self.resize:
             factor = 128 / sample['e_img'].shape[2]
             sample['e_img'] = zoom(sample['e_img'], (0.5, 0.5, factor))
-            sample['e_lung_mask'] = zoom(sample['e_lung_mask'], (0.5, 0.5, factor))
-            sample['e_img_factor'] = factor
+            if self.return_lung_masks:
+                sample['e_lung_mask'] = zoom(sample['e_lung_mask'], (0.5, 0.5, factor))
+                sample['e_img_factor'] = factor
 
         # Landmarks
         if self.return_lm_mask:
