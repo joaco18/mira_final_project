@@ -162,11 +162,11 @@ def get_lungs_mask(input_image: np.ndarray) -> np.ndarray:
 
 
 def normalize_scan(scan, mask):
-    # min = np.min(scan[scan != 0])
-    # max = np.max(scan[scan != 0])
-    # scan = (scan - min) / (max - min)
-    mean = np.mean(scan[mask != 0])
-    std = np.std(scan[mask != 0])
-    scan = (scan - mean) / std
-    scan[mask == 0] = 0
+    min = np.min(scan[scan != 0])
+    max = np.max(scan[scan != 0])
+    scan = (scan - min) / (max - min)
+    # mean = np.mean(scan[mask != 0])
+    # std = np.std(scan[mask != 0])
+    # scan = (scan - mean) / std
+    # scan[mask == 0] = 0
     return scan
