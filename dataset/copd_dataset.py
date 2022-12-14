@@ -110,6 +110,9 @@ class DirLabCOPD():
         sample = {}
         sample['case'] = case
 
+        sample['i_lung_mask'] = None
+        sample['e_lung_mask'] = None
+
         # Load inhale data (fixed image)
         # Image
         sample['i_img_path'] = str(case_path / f'{case}_iBHCT.nii.gz')
