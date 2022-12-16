@@ -82,7 +82,7 @@ class DirLabCOPD():
         self.return_imgs = return_imgs
         self.return_lung_masks = return_lung_masks
         self.return_body_masks = return_body_masks
-
+        self.resize_shape=resize_shape
         # Read the dataset csv
         self.df = pd.read_csv(self.data_path / 'dir_lab_copd' / 'dir_lab_copd.csv', index_col=0)
 
