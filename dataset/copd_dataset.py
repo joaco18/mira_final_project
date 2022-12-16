@@ -48,6 +48,7 @@ class DirLabCOPD():
             return_body_masks: bool = False,
             standardize_scan: bool = False,
             resize: bool = False,
+            resize_shape: tuple= None
     ):
         """
         Args:
@@ -142,11 +143,11 @@ class DirLabCOPD():
                                                      use_mask=self.return_lung_masks)
 
         if self.resize:
-            factor = 128 / sample['i_img'].shape[2]
-            sample['i_img'] = zoom(sample['i_img'], (0.5, 0.5, factor))
+            factor = tuple(self.resize_shape[i]/ sample['i_img'].shape[i] for i in range(3))
+            sample['i_img'] = zoom(sample['i_img'], factor)
             sample['i_img_factor'] = factor
             if self.return_lung_masks:
-                sample['i_lung_mask'] = zoom(sample['i_lung_mask'], (0.5, 0.5, factor))
+                sample['i_lung_mask'] = zoom(sample['i_lung_mask'], factor)
 
         # Landmarks
         if self.return_lm_mask:
@@ -185,10 +186,10 @@ class DirLabCOPD():
                                                      use_mask=self.return_lung_masks)
 
         if self.resize:
-            factor = 128 / sample['e_img'].shape[2]
-            sample['e_img'] = zoom(sample['e_img'], (0.5, 0.5, factor))
+            factor = tuple(self.resize_shape[i]/ sample['e_img'].shape[i] for i in range(3))
+            sample['e_img'] = zoom(sample['e_img'], factor)
             if self.return_lung_masks:
-                sample['e_lung_mask'] = zoom(sample['e_lung_mask'], (0.5, 0.5, factor))
+                sample['e_lung_mask'] = zoom(sample['e_lung_mask'], factor)
                 sample['e_img_factor'] = factor
 
         # Landmarks
