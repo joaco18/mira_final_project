@@ -6,7 +6,7 @@ from typing import Tuple
 def target_registration_error(
     pts_i: np.ndarray, pts_e: np.ndarray, voxel_size: Tuple[float]
 ) -> Tuple[float]:
-    """ Computes the mean and sandar deviation for target registration error in mm
+    """ Computes the mean and standard deviation for target registration error in mm
     between two arrays of sorted points.
     Warning: The points should have the same order in each array
 

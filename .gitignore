@@ -3,6 +3,12 @@ data/
 elastix/elastix-5.0.0*
 experiments/elastix/Par*
 experiments/elastix/anw*
+antspy/ANTs
+antspy/build
+antspy/install
+antspy/Output
+antspy/transforms
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -133,3 +139,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+ants/transforms/0GenericAffine.mat
+ants/transforms/1InverseWarp.nii.gz
+ants/transforms/1Warp.nii.gz
