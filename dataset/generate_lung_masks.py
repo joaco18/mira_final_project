@@ -8,15 +8,7 @@ from preprocess.preprocess import get_lungs_mask
 from utils.utils import save_img_from_array_using_metadata
 
 
-def main():
-    data = DirLabCOPD(
-        cases=['all'],
-        partitions=['train', 'val', 'test'],
-        return_lm_mask=True,
-        normalization_cfg=None,
-        data_path= Path('/home/kaouther/Documents/GitHub/mira_final_project/data')
-    )
-
+def generate_lung_masks(data):
     # Define fixed imgage to use
     for i in tqdm(range(len(data))):
         sample = data[i]
@@ -34,6 +26,17 @@ def main():
         metadata = sample['ref_metadata']
         e_img_path = Path(sample['e_img_path'].replace('.nii.gz', '_lungs.nii.gz'))
         save_img_from_array_using_metadata(e_lungs, metadata, e_img_path)
+
+
+def main():
+    data = DirLabCOPD(
+        cases=['all'],
+        partitions=['train', 'val', 'test'],
+        return_lm_mask=True,
+        normalization_cfg=None,
+        data_path=Path('/home/kaouther/Documents/GitHub/mira_final_project/data')
+    )
+    generate_lung_masks(data)
 
 
 if __name__ == '__main__':
