@@ -13,7 +13,8 @@ def main():
         cases=['all'],
         partitions=['train', 'val', 'test'],
         return_lm_mask=True,
-        normalization_cfg=None
+        normalization_cfg=None,
+        data_path= Path('/home/kaouther/Documents/GitHub/mira_final_project/data')
     )
 
     # Define fixed imgage to use

@@ -3,6 +3,12 @@ data/
 elastix/elastix-5.0.0*
 experiments/elastix/Par*
 experiments/elastix/BSP*
+antspy/ANTs
+antspy/build
+antspy/install
+antspy/Output
+antspy/transforms
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
