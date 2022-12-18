@@ -3,11 +3,11 @@ data/
 elastix/elastix-5.0.0*
 experiments/elastix/Par*
 experiments/elastix/anw*
-ants/ANTs
-ants/build
-ants/install
-ants/Output
-ants/transforms
+antspy/ANTs
+antspy/build
+antspy/install
+antspy/Output
+antspy/transforms
 
 
 # Byte-compiled / optimized / DLL files
