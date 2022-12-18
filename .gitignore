@@ -8,6 +8,7 @@ antspy/build
 antspy/install
 antspy/Output
 antspy/transforms
+elastix/inference_config.yaml
 
 
 # Byte-compiled / optimized / DLL files
