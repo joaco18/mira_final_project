@@ -4,7 +4,7 @@ parsing_config:
   parsed_images_path: '/home/jseia/Desktop/MAIA/classes/spain/mira/final_project/mira_final_project/data/dir_lab_copd'
 
 dataset:
-  data_path: '/home/jseia/Desktop/MAIA/classes/spain/mira/final_project/mira_final_project/data/dir_lab_copd'
+  data_path: '/home/jseia/Desktop/MAIA/classes/spain/mira/final_project/mira_final_project/data/'
   cases: ['copd5', 'copd6', 'copd7', 'copd8', 'copd9']
   extract_lung_masks: True
   partitions: ['test']
