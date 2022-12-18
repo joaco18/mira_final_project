@@ -12,24 +12,15 @@ from utils import utils
 logging.basicConfig(level=logging.INFO)
 
 
-def main():
-    # Define the datapath from the file
-    data_path = Path(__file__).resolve().parent.parent
-    out_path = data_path / 'data' / 'dir_lab_copd'
-    data_path = data_path / 'data' / 'dir_lab_copd_raw'
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--rip", dest="raw_images_path", help="Path to the dir_lab_copd_raw folder",
-        default=str(data_path))
-    parser.add_argument(
-        "--op", dest="output_path", help="Directory where to store the result",
-        default=str(out_path))
-    args = parser.parse_args()
-
-    data_path = Path(args.raw_images_path)
-    out_path = Path(args.output_path)
-
+def parse_raw_images(data_path: Path, out_path: Path):
+    """
+    Args:
+        data_path (Path): path to the directory containing the raw cases
+        out_path (Path): path to the directory where the parsed .nii versions
+            will be saved
+    Returns:
+        (pd.DataFrame): dataframe of the metadata to be used in the CopdDataset class
+    """
     with open(str(data_path.parent / 'dir_lab_copd_metadata.json'), 'r') as json_file:
         dirlab_meta = json.load(json_file)
 
@@ -88,6 +79,27 @@ def main():
     ]
     columns = columns + metrics_keys
     df = pd.DataFrame(df, columns=columns)
+    return df
+
+
+def main():
+    # Define the datapath from the file
+    data_path = Path(__file__).resolve().parent.parent
+    out_path = data_path / 'data' / 'dir_lab_copd'
+    data_path = data_path / 'data' / 'dir_lab_copd_raw'
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--rip", dest="raw_images_path", help="Path to the dir_lab_copd_raw folder",
+        default=str(data_path))
+    parser.add_argument(
+        "--op", dest="output_path", help="Directory where to store the result",
+        default=str(out_path))
+    args = parser.parse_args()
+
+    data_path = Path(args.raw_images_path)
+    out_path = Path(args.output_path)
+    df = parse_raw_images(data_path, out_path)
     df.to_csv(out_path/'dir_lab_copd.csv')
 
 
