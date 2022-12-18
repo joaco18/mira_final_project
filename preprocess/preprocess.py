@@ -9,12 +9,15 @@ def normalize(
 ):
     if window is not None:
         img = np.clip(img, window[0], window[1])
-    if norm_type == 'min-max':
-        img = min_max_norm(img, max_val, mask, dtype)
-    else:
-        raise Exception(
-            f'Nomalization method {norm_type} not implemented try one of [min-max, ]'
-        )
+    if norm_type is not None:
+        if norm_type == 'min-max':
+            img = min_max_norm(img, max_val, mask, dtype)
+        elif norm_type == 'z-score':
+            img = z_score_norm(img, mask, dtype)
+        else:
+            raise Exception(
+                f'Nomalization method {norm_type} not implemented try one of [min-max, ]'
+            )
     return img
 
 
@@ -51,6 +54,26 @@ def min_max_norm(
     img = np.clip(img, 0, max_val)
 
     # Adjust data type
+    img = img.astype(dtype) if dtype is not None else img
+    return img
+
+
+def z_score_norm(
+    img: np.ndarray, mask: np.ndarray = None, dtype: str = None
+) -> np.ndarray:
+    """
+    Args:
+        img (np.ndarray): Image to be scaled.
+        mask (np.ndarray, optional): Mask to use in the normalization process.
+            Defaults to None which means no mask is used.
+        dtype (str, optional): Output datatype
+    Returns:
+        np.ndarray: Scaled image with values from [0, max_val]
+    """
+    mask = np.ones_like(img) if mask is None else mask
+    mean = np.mean(img[mask != 0])
+    std = np.std(img[mask != 0])
+    img = (img - mean) / std
     img = img.astype(dtype) if dtype is not None else img
     return img
 
@@ -161,8 +184,3 @@ def get_lungs_mask(input_image: np.ndarray) -> np.ndarray:
     return lungs.astype('uint8')
 
 
-def normalize_scan(scan, mask):
-    mean = np.mean(scan[scan != 0])
-    std = np.std(scan[scan != 0])
-    scan = (scan - mean) / std
-    return scan
