@@ -247,6 +247,13 @@ class DirLabCOPD():
         #         sample['e_lung_mask'] = zoom(sample['e_lung_mask'], factor)
         #         sample['e_img_factor'] = factor
 
+        if self.resize:
+            factor = tuple(self.resize_shape[i]/ sample['e_img'].shape[i] for i in range(3))
+            sample['e_img'] = zoom(sample['e_img'], factor)
+            sample['e_img_factor'] = factor
+            if self.return_lung_masks:
+                sample['e_lung_mask'] = zoom(sample['e_lung_mask'], factor)
+
         # Landmarks
         if self.return_lm_mask:
             sample['e_landmark_mask'] = sitk.GetArrayFromImage(
