@@ -4,12 +4,28 @@ import pandas as pd
 from skimage.exposure import match_histograms, equalize_adapthist
 import SimpleITK as sitk
 import numpy as np
+from monai.transforms import Rand3DElasticd, RandAffined, Spacingd, Compose
 from scipy.ndimage import zoom
 
 import preprocess.preprocess as preproc
 from utils import utils
 
-data_path = Path('__file__').resolve().parent.parent / 'data'
+data_path = Path().resolve().parent.parent / 'data'
+# data_path = Path('../data')
+
+rand_elastic = Rand3DElasticd(
+    keys=["image", "label"],
+    mode=("bilinear", "nearest"),
+    prob=0.8,
+    sigma_range=(5, 8),
+    magnitude_range=(100, 200),
+    spatial_size=(256, 256, 128),
+    translate_range=(50, 50, 2),
+    rotate_range=(np.pi / 36, np.pi / 36, np.pi),
+    scale_range=(0.15, 0.15, 0.15),
+    padding_mode="border",
+)
+train_transform = Compose([rand_elastic])
 
 NORMALIZATION_CFG = {
     'norm_type': 'min-max',
@@ -32,9 +48,10 @@ class DirLabCOPD():
             return_lung_masks: bool = False,
             return_body_masks: bool = False,
             standardize_scan: bool = False,
+            resize_shape: tuple = None,
             resize: bool = False,
             clahe: bool = False,
-            histogram_matching: bool = False,
+            histogram_matching: bool = False
     ):
         """
         Args:
@@ -56,6 +73,7 @@ class DirLabCOPD():
                 Defaults to False.
             resize (bool, optional): Whether to zoom data to have data of shape 256,256,128.
                 Defaults to False.
+            resize_shape (tuple, optional): shape to resize to.
         """
         self.data_path = data_path
         self.cases = cases
@@ -63,16 +81,27 @@ class DirLabCOPD():
         self.return_lm_mask = return_lm_mask
         self.normalization_cfg = normalization_cfg
         if standardize_scan:
+            # if self.normalization_cfg is not None:
+            #     self.normalization_cfg['norm_type'] = 'z-score'
+            #     self.normalization_cfg['mask'] = 'lungs'
+            # else:
+            #     self.normalization_cfg = {'norm_type': 'z-score', 'mask': 'lungs'}
             if self.normalization_cfg is not None:
-                self.normalization_cfg['norm_type'] = 'z-score'
-                self.normalization_cfg['mask'] = 'lungs'
+                self.normalization_cfg['norm_type'] = 'min-max-nobkgrd'
+                self.normalization_cfg['mask'] = 'lungs' if self.return_lung_masks else None
+                self.normalization_cfg['dtype'] = 'float32'
+                self.normalization_cfg['max_val'] = 1.0
             else:
-                self.normalization_cfg = {'norm_type': 'z-score', 'mask': 'lungs'}
+                self.normalization_cfg = {
+                    'norm_type': 'min-max-nobkgrd', 'dtype': 'float32', 'max_val': 1.0,
+                    'mask': 'lungs' if self.return_lung_masks else None
+                }
 
         self.resize = resize
         self.return_imgs = return_imgs
         self.return_lung_masks = return_lung_masks
         self.return_body_masks = return_body_masks
+        self.resize_shape = resize_shape
 
         self.clahe = clahe
         self.histogram_matching = histogram_matching
@@ -105,6 +134,9 @@ class DirLabCOPD():
         sample = {}
         sample['case'] = case
 
+        sample['i_lung_mask'] = None
+        sample['e_lung_mask'] = None
+
         # Load inhale data (fixed image)
         # Image
         sample['i_img_path'] = str(case_path / f'{case}_iBHCT.nii.gz')
@@ -123,7 +155,7 @@ class DirLabCOPD():
 
         if self.return_body_masks:
             sample['i_body_mask'] = sitk.GetArrayFromImage(sitk.ReadImage(
-                str(case_path / f'{case}_eBHCT_lungs.nii.gz')))
+                str(case_path / f'{case}_iBHCT_lungs.nii.gz')))
             sample['i_body_mask'] = np.where(sample['i_body_mask'] != 0, 255, 0)
             sample['i_body_mask'] = np.moveaxis(sample['i_body_mask'], [0, 1, 2], [2, 1, 0])
 
@@ -185,24 +217,31 @@ class DirLabCOPD():
         if self.histogram_matching:
             sample['e_img'] = match_histograms(sample['e_img'], sample['i_img'])
 
-        # Resize images
         if self.resize:
             # inhale
-            factor = 128 / sample['i_img'].shape[2]
+            factor = tuple(self.resize_shape[i]/ sample['i_img'].shape[i] for i in range(3))
             sample['i_img'] = zoom(sample['i_img'], (0.5, 0.5, factor))
             sample['i_img_factor'] = factor
             if 'i_lung_mask' in sample.keys():
                 sample['i_lung_mask'] = zoom(sample['i_lung_mask'], (0.5, 0.5, factor))
             if 'i_body_mask' in sample.keys():
                 sample['i_body_mask'] = zoom(sample['i_body_mask'], (0.5, 0.5, factor))
+
             # exhale
-            factor = 128 / sample['e_img'].shape[2]
+            factor = tuple(self.resize_shape[i]/ sample['e_img'].shape[i] for i in range(3))
             sample['e_img'] = zoom(sample['e_img'], (0.5, 0.5, factor))
             sample['e_img_factor'] = factor
             if 'e_lung_mask' in sample.keys():
                 sample['e_lung_mask'] = zoom(sample['e_lung_mask'], (0.5, 0.5, factor))
             if 'e_body_mask' in sample.keys():
                 sample['e_body_mask'] = zoom(sample['e_body_mask'], (0.5, 0.5, factor))
+
+        if self.resize:
+            factor = tuple(self.resize_shape[i]/ sample['e_img'].shape[i] for i in range(3))
+            sample['e_img'] = zoom(sample['e_img'], factor)
+            sample['e_img_factor'] = factor
+            if self.return_lung_masks:
+                sample['e_lung_mask'] = zoom(sample['e_lung_mask'], factor)
 
         # Landmarks
         if self.return_lm_mask:
@@ -222,7 +261,27 @@ class DirLabCOPD():
         return sample
 
 
-def vxm_data_generator_cache(samples, batch_size=32):
+def transform_sample(sample, transforms):
+    # transform e_img or i_img by probability of 0.5
+    sample_new = {}
+    if np.random.rand() > 0.5:
+        transformed_sample = transforms(
+            {'image': sample['e_img'][np.newaxis, ...], 'label': sample['e_lung_mask'][np.newaxis, ...]})
+        sample_new['e_img'] = transformed_sample['image'][0]
+        sample_new['e_lung_mask'] = transformed_sample['label'][0]
+        sample_new['i_img'] = sample['i_img']
+
+    else:
+        transformed_sample = transforms(
+            {'image': sample['i_img'][np.newaxis, ...], 'label': sample['i_lung_mask'][np.newaxis, ...]})
+        sample_new['i_img'] = transformed_sample['image'][0]
+        sample_new['i_lung_mask'] = transformed_sample['label'][0]
+        sample_new['e_img'] = sample['e_img']
+
+    return sample_new
+
+
+def vxm_data_generator_cache(samples, batch_size=32, transforms=None, use_labels=False):
     """
     Generator that takes in data of size [N, H, W, D], and yields data for
     our custom vxm model. Note that we need to provide numpy data for each
@@ -234,8 +293,10 @@ def vxm_data_generator_cache(samples, batch_size=32):
     while True:
         idx1 = np.random.randint(0, len(samples), size=batch_size)
 
-        moving_images = [samples[i]['e_img'][np.newaxis, ..., np.newaxis] for i in idx1]
-        fixed_images = [samples[i]['i_img'][np.newaxis, ..., np.newaxis] for i in idx1]
+        chosen_samples = [transform_sample(samples[i], transforms) if transforms else samples[i] for i in idx1]
+
+        moving_images = [sample['e_img'][np.newaxis, ..., np.newaxis] for sample in chosen_samples]
+        fixed_images = [sample['i_img'][np.newaxis, ..., np.newaxis] for sample in chosen_samples]
 
         moving_images = np.concatenate(moving_images, axis=0)
         fixed_images = np.concatenate(fixed_images, axis=0)
@@ -245,7 +306,20 @@ def vxm_data_generator_cache(samples, batch_size=32):
 
         zero_phi = np.zeros((batch_size, *vol_shape, ndims))
 
-        inputs = [moving_images, fixed_images]
-        outputs = [fixed_images, zero_phi]
+        if use_labels:
+            downsize = 2
+            moving_masks = [
+                (samples[i]['e_lung_mask'] / 255.0)[np.newaxis, ::downsize, ::downsize, ::downsize, np.newaxis] for i in
+                idx1]
+            fixed_masks = [
+                (samples[i]['i_lung_mask'] / 255.0)[np.newaxis, ::downsize, ::downsize, ::downsize, np.newaxis] for i in
+                idx1]
+            moving_masks = np.concatenate(moving_masks, axis=0)
+            fixed_masks = np.concatenate(fixed_masks, axis=0)
+            inputs = [moving_images, fixed_images, moving_masks]
+            outputs = [fixed_images, zero_phi, fixed_masks]
+        else:
+            inputs = [moving_images, fixed_images]
+            outputs = [fixed_images, zero_phi]
 
         yield inputs, outputs
