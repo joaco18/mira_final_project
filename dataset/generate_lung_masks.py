@@ -12,7 +12,7 @@ def generate_lung_masks(data):
     # Define fixed imgage to use
     for i in tqdm(range(len(data))):
         sample = data[i]
-        print(f'{"-" * 5} Processing Case {sample["case"]} {"-" * 5}')
+        # print(f'{"-" * 5} Processing Case {sample["case"]} {"-" * 5}')
         # Extract and save lungs mask for inhale data
         i_img = np.moveaxis(sample['i_img'], [0, 1, 2], [2, 1, 0])
         i_lungs = get_lungs_mask(i_img)
