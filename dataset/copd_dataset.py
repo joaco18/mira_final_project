@@ -48,11 +48,10 @@ class DirLabCOPD():
             return_lung_masks: bool = False,
             return_body_masks: bool = False,
             standardize_scan: bool = False,
-            resize: bool = False,
             resize_shape: tuple= None,
             resize: bool = False,
             clahe: bool = False,
-            histogram_matching: bool = False,
+            histogram_matching: bool = False
     ):
         """
         Args:
@@ -225,28 +224,28 @@ class DirLabCOPD():
             sample['e_img'] = preproc.normalize_scan(sample['e_img'], sample['e_lung_mask'],
                                                      use_mask=self.return_lung_masks)
 
-        if self.resize:
-            # inhale
-            factor = 128 / sample['i_img'].shape[2]
-            sample['i_img'] = zoom(sample['i_img'], (0.5, 0.5, factor))
-            sample['i_img_factor'] = factor
-            if 'i_lung_mask' in sample.keys():
-                sample['i_lung_mask'] = zoom(sample['i_lung_mask'], (0.5, 0.5, factor))
-            if 'i_body_mask' in sample.keys():
-                sample['i_body_mask'] = zoom(sample['i_body_mask'], (0.5, 0.5, factor))
-            # exhale
-            factor = 128 / sample['e_img'].shape[2]
-            sample['e_img'] = zoom(sample['e_img'], (0.5, 0.5, factor))
-            sample['e_img_factor'] = factor
-            if 'e_lung_mask' in sample.keys():
-                sample['e_lung_mask'] = zoom(sample['e_lung_mask'], (0.5, 0.5, factor))
-            if 'e_body_mask' in sample.keys():
-                sample['e_body_mask'] = zoom(sample['e_body_mask'], (0.5, 0.5, factor))
-            factor = tuple(self.resize_shape[i]/ sample['e_img'].shape[i] for i in range(3))
-            sample['e_img'] = zoom(sample['e_img'], factor)
-            if self.return_lung_masks:
-                sample['e_lung_mask'] = zoom(sample['e_lung_mask'], factor)
-                sample['e_img_factor'] = factor
+        # if self.resize:
+        #     # inhale
+        #     factor = 128 / sample['i_img'].shape[2]
+        #     sample['i_img'] = zoom(sample['i_img'], (0.5, 0.5, factor))
+        #     sample['i_img_factor'] = factor
+        #     if 'i_lung_mask' in sample.keys():
+        #         sample['i_lung_mask'] = zoom(sample['i_lung_mask'], (0.5, 0.5, factor))
+        #     if 'i_body_mask' in sample.keys():
+        #         sample['i_body_mask'] = zoom(sample['i_body_mask'], (0.5, 0.5, factor))
+        #     # exhale
+        #     factor = 128 / sample['e_img'].shape[2]
+        #     sample['e_img'] = zoom(sample['e_img'], (0.5, 0.5, factor))
+        #     sample['e_img_factor'] = factor
+        #     if 'e_lung_mask' in sample.keys():
+        #         sample['e_lung_mask'] = zoom(sample['e_lung_mask'], (0.5, 0.5, factor))
+        #     if 'e_body_mask' in sample.keys():
+        #         sample['e_body_mask'] = zoom(sample['e_body_mask'], (0.5, 0.5, factor))
+        #     factor = tuple(self.resize_shape[i]/ sample['e_img'].shape[i] for i in range(3))
+        #     sample['e_img'] = zoom(sample['e_img'], factor)
+        #     if self.return_lung_masks:
+        #         sample['e_lung_mask'] = zoom(sample['e_lung_mask'], factor)
+        #         sample['e_img_factor'] = factor
 
         # Landmarks
         if self.return_lm_mask:
