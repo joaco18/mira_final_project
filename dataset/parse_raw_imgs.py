@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import logging
 import json
+import shutil
 
 from dataset import data_utils
 from utils import utils
@@ -28,7 +29,7 @@ def parse_raw_images(data_path: Path, out_path: Path):
     for case_path in sorted(data_path.iterdir()):
         # Define paths
         case = case_path.name
-        logging.info(f'Processing case: {case}')
+        logging.info(f'Parsing case: {case}')
         ilm_path = case_path / f'{case}_300_iBH_xyz_r1.txt'
         i_img_path = case_path / f'{case}_iBHCT.img'
         elm_path = case_path / f'{case}_300_eBH_xyz_r1.txt'
@@ -50,6 +51,13 @@ def parse_raw_images(data_path: Path, out_path: Path):
             sitk.WriteImage(img, str(img_out_path))
 
             # Generate landmarks mask
+            txt_out_file = case_out_path / f'{lm_path.stem}.txt'
+            shutil.copy(str(lm_path), str(txt_out_file))
+            with open(txt_out_file, 'r+') as f:
+                content = f.read()
+                f.seek(0, 0)
+                f.write('index' + '\n' + '300' + '\n' + content)
+
             landmarks = pd.read_csv(
                 lm_path, header=None, sep='\t |\t', engine='python').astype('int')
             lm_pts_out_path = case_out_path / f'{lm_path.stem}.csv'
