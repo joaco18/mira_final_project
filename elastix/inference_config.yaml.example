@@ -1,21 +1,22 @@
 parsing_config:
-  doit: False
+  doit: True
   raw_images_path: '/home/jseia/Desktop/MAIA/classes/spain/mira/final_project/mira_final_project/data/dir_lab_copd_raw'
   parsed_images_path: '/home/jseia/Desktop/MAIA/classes/spain/mira/final_project/mira_final_project/data/dir_lab_copd'
 
 dataset:
-  data_path: '/home/jseia/Desktop/MAIA/classes/spain/mira/final_project/mira_final_project/data/'
-  cases: ['copd5', 'copd6', 'copd7', 'copd8', 'copd9']
+  data_path: '/home/jseia/Desktop/MAIA/classes/spain/mira/final_project/mira_final_project/data'
+  cases: ['copd1', 'copd2', 'copd3', 'copd4'] #['copd5', 'copd6', 'copd7', 'copd8', 'copd9']
   extract_lung_masks: True
-  partitions: ['test']
+  partitions: ['train']
   return_body_masks: True
   return_lung_masks: True
   clahe: False
   histogram_matching: False
+  normalization_cfg: null
 
 registration_config:
   mask: 'lungs'
   params_path: '/home/jseia/Desktop/MAIA/classes/spain/mira/final_project/mira_final_project/elastix/parameter_maps/OUR'
   output_path: '/home/jseia/Desktop/MAIA/classes/spain/mira/final_project/mira_final_project/experiments/elastix_inference'
   param_maps_to_use: ['Par0003.bs-R6-ug_8.txt']
-  experiment_name: '/home/jseia/Desktop/MAIA/classes/spain/mira/final_project/mira_final_project/elastix/parameter_maps/OUR'
+  experiment_name: 'inference_1'
