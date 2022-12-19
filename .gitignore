@@ -1,8 +1,15 @@
 data/
 .vscode/
-elastix/elastix-5.0.0*
+elastix/elastix-5.0.*
 experiments/elastix/Par*
-experiments/elastix/anw*
+experiments/elastix/BSP*
+antspy/ANTs
+antspy/build
+antspy/install
+antspy/Output
+antspy/transforms
+elastix/inference_config.yaml
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

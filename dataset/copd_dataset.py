@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import List
 import pandas as pd
+from skimage.exposure import match_histograms, equalize_adapthist
 import SimpleITK as sitk
 import numpy as np
 from monai.transforms import Rand3DElasticd, RandAffined, Spacingd, Compose
@@ -48,7 +49,10 @@ class DirLabCOPD():
             return_body_masks: bool = False,
             standardize_scan: bool = False,
             resize: bool = False,
-            resize_shape: tuple= None
+            resize_shape: tuple= None,
+            resize: bool = False,
+            clahe: bool = False,
+            histogram_matching: bool = False,
     ):
         """
         Args:
@@ -70,19 +74,29 @@ class DirLabCOPD():
                 Defaults to False.
             resize (bool, optional): Whether to zoom data to have data of shape 256,256,128.
                 Defaults to False.
+            resize_shape (tuple, optional): shape to resize to.
         """
         self.data_path = data_path
         self.cases = cases
         self.partitions = partitions
         self.return_lm_mask = return_lm_mask
         self.normalization_cfg = normalization_cfg
-        self.standardize_scan = standardize_scan
+        if standardize_scan:
+            if self.normalization_cfg is not None:
+                self.normalization_cfg['norm_type'] = 'z-score'
+                self.normalization_cfg['mask'] = 'lungs'
+            else:
+                self.normalization_cfg = {'norm_type': 'z-score', 'mask': 'lungs'}
 
         self.resize = resize
         self.return_imgs = return_imgs
         self.return_lung_masks = return_lung_masks
         self.return_body_masks = return_body_masks
         self.resize_shape=resize_shape
+
+        self.clahe = clahe
+        self.histogram_matching = histogram_matching
+
         # Read the dataset csv
         self.df = pd.read_csv(self.data_path / 'dir_lab_copd' / 'dir_lab_copd.csv', index_col=0)
 
@@ -117,12 +131,14 @@ class DirLabCOPD():
         # Load inhale data (fixed image)
         # Image
         sample['i_img_path'] = str(case_path / f'{case}_iBHCT.nii.gz')
+        sample['i_full_mask_path'] = str(case_path / f'{case}_iBHCT_lungs.nii.gz')
         if self.return_imgs:
             sample['i_img'] = sitk.ReadImage(sample['i_img_path'])
 
             sample['ref_metadata'] = utils.extract_metadata(sample['i_img'])
             sample['i_img'] = sitk.GetArrayFromImage(sample['i_img'])
             sample['i_img'] = np.moveaxis(sample['i_img'], [0, 1, 2], [2, 1, 0])
+
         if self.return_lung_masks:
             sample['i_lung_mask'] = sitk.GetArrayFromImage(sitk.ReadImage(
                 str(case_path / f'{case}_iBHCT_lungs.nii.gz')))
@@ -135,8 +151,17 @@ class DirLabCOPD():
             sample['i_body_mask'] = np.where(sample['i_body_mask'] != 0, 255, 0)
             sample['i_body_mask'] = np.moveaxis(sample['i_body_mask'], [0, 1, 2], [2, 1, 0])
 
+        # Preprocess inhale:
         if self.normalization_cfg is not None:
-            sample['i_img'] = preproc.normalize(sample['i_img'], **self.normalization_cfg)
+            norm_cfg = self.normalization_cfg.copy()
+            if isinstance(norm_cfg['mask'], str):
+                if norm_cfg['mask'] == 'body':
+                    norm_cfg['mask'] = sample['i_body_mask']
+                elif norm_cfg['mask'] == 'lungs':
+                    norm_cfg['mask'] = sample['i_lung_mask']
+            sample['i_img'] = preproc.normalize(sample['i_img'], **norm_cfg)
+        if self.clahe:
+            sample['i_img'] = equalize_adapthist(sample['i_img'], (8, 8, 8), 2)
 
         if self.standardize_scan:
             sample['i_img'] = preproc.normalize_scan(sample['i_img'], sample['i_lung_mask'],
@@ -161,6 +186,7 @@ class DirLabCOPD():
         # Load exahale data (fixed image)
         # Image
         sample['e_img_path'] = str(case_path / f'{case}_eBHCT.nii.gz')
+        sample['e_full_mask_path'] = str(case_path / f'{case}_eBHCT_lungs.nii.gz')
         if self.return_imgs:
             sample['e_img'] = sitk.ReadImage(str(case_path / f'{case}_eBHCT.nii.gz'))
             sample['e_img'] = sitk.GetArrayFromImage(sample['e_img'])
@@ -178,14 +204,44 @@ class DirLabCOPD():
             sample['e_body_mask'] = np.where(sample['e_body_mask'] != 0, 255, 0)
             sample['e_body_mask'] = np.moveaxis(sample['e_body_mask'], [0, 1, 2], [2, 1, 0])
 
+        # Preprocess exhale:
         if self.normalization_cfg is not None:
-            sample['e_img'] = preproc.normalize(sample['e_img'], **self.normalization_cfg)
+            norm_cfg = self.normalization_cfg.copy()
+            if isinstance(norm_cfg['mask'], str):
+                if norm_cfg['mask'] == 'body':
+                    norm_cfg['mask'] = sample['e_body_mask']
+                elif norm_cfg['mask'] == 'lungs':
+                    norm_cfg['mask'] = sample['e_lung_mask']
+            sample['e_img'] = preproc.normalize(sample['e_img'], **norm_cfg)
 
+        if self.clahe:
+            sample['e_img'] = equalize_adapthist(sample['e_img'], (8, 8, 8), 2)
+
+        if self.histogram_matching:
+            sample['e_img'] = match_histograms(sample['e_img'], sample['i_img'])
+
+        # Resize images
         if self.standardize_scan:
             sample['e_img'] = preproc.normalize_scan(sample['e_img'], sample['e_lung_mask'],
                                                      use_mask=self.return_lung_masks)
 
         if self.resize:
+            # inhale
+            factor = 128 / sample['i_img'].shape[2]
+            sample['i_img'] = zoom(sample['i_img'], (0.5, 0.5, factor))
+            sample['i_img_factor'] = factor
+            if 'i_lung_mask' in sample.keys():
+                sample['i_lung_mask'] = zoom(sample['i_lung_mask'], (0.5, 0.5, factor))
+            if 'i_body_mask' in sample.keys():
+                sample['i_body_mask'] = zoom(sample['i_body_mask'], (0.5, 0.5, factor))
+            # exhale
+            factor = 128 / sample['e_img'].shape[2]
+            sample['e_img'] = zoom(sample['e_img'], (0.5, 0.5, factor))
+            sample['e_img_factor'] = factor
+            if 'e_lung_mask' in sample.keys():
+                sample['e_lung_mask'] = zoom(sample['e_lung_mask'], (0.5, 0.5, factor))
+            if 'e_body_mask' in sample.keys():
+                sample['e_body_mask'] = zoom(sample['e_body_mask'], (0.5, 0.5, factor))
             factor = tuple(self.resize_shape[i]/ sample['e_img'].shape[i] for i in range(3))
             sample['e_img'] = zoom(sample['e_img'], factor)
             if self.return_lung_masks:
