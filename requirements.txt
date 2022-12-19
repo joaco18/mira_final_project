@@ -10,4 +10,4 @@ SimpleITK-SimpleElastix == 2.0.0rc2.dev909
 PyYAML == 6.0
 unzip == 1.0.0
 antspyx == 0.3.4
-monai
+monai == 1.0.1
