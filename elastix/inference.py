@@ -15,7 +15,7 @@ from dataset.generate_lung_masks import generate_lung_masks
 import utils.utils as utils
 
 logging.basicConfig(level=logging.INFO)
-BASE_PATH = Path().resolve().parent.parent
+BASE_PATH = Path().resolve()
 
 
 def run_experiment(
@@ -152,15 +152,15 @@ def main():
 
     # Parse the raw images
     if cfg['parsing_config']['doit']:
-        logging.info('Parsing raw images...')
-        data_path = Path(cfg['raw_images_path'])
-        out_path = Path(cfg['parsed_images_path'])
+        logging.info('\nParsing raw images...')
+        data_path = Path(cfg['parsing_config']['raw_images_path'])
+        out_path = Path(cfg['parsing_config']['parsed_images_path'])
         df = parse_raw_images(data_path, out_path)
-        df.to_csv(cfg['parsed_images_path']/'dir_lab_copd.csv')
+        df.to_csv(Path(cfg['parsing_config']['parsed_images_path'])/'dir_lab_copd.csv')
 
     # Extract the lungs mask
     if cfg['dataset']['extract_lung_masks']:
-        logging.info('Extracting lungs masks images...')
+        logging.info('\nExtracting lungs masks images...')
         data = DirLabCOPD(
             data_path=Path(cfg['dataset']['data_path']),
             cases=cfg['dataset']['cases'],
@@ -171,7 +171,7 @@ def main():
         generate_lung_masks(data)
 
     # Run the registration
-    logging.info('Registering the images...')
+    logging.info('\nRegistering the images...')
     data = DirLabCOPD(
         data_path=Path(cfg['dataset']['data_path']),
         cases=cfg['dataset']['cases'],
@@ -195,8 +195,8 @@ def main():
             json.dump(results, json_file, indent=4, separators=(',', ': '))
 
     params_path = Path(cfg['registration_config']['params_path'])
-    experiment_name = Path(cfg['registration_config']['experiment_name'])
-    param_maps_to_use = Path(cfg['registration_config']['param_maps_to_use'])
+    experiment_name = cfg['registration_config']['experiment_name']
+    param_maps_to_use = cfg['registration_config']['param_maps_to_use']
     mask = Path(cfg['registration_config']['mask'])
 
     results[experiment_name] = run_experiment(
@@ -205,3 +205,7 @@ def main():
     logging.info('Experiment finished, storing the results...')
     with open(results_path, 'w') as json_file:
         json.dump(results, json_file, indent=4, separators=(',', ': '))
+
+
+if __name__ == '__main__':
+    main()
