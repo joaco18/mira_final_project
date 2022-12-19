@@ -10,7 +10,7 @@ from scipy.ndimage import zoom
 import preprocess.preprocess as preproc
 from utils import utils
 
-data_path = Path('__file__').resolve().parent.parent / 'data'
+data_path = Path().resolve().parent.parent / 'data'
 # data_path = Path('../data')
 
 rand_elastic = Rand3DElasticd(
@@ -48,7 +48,7 @@ class DirLabCOPD():
             return_lung_masks: bool = False,
             return_body_masks: bool = False,
             standardize_scan: bool = False,
-            resize_shape: tuple= None,
+            resize_shape: tuple = None,
             resize: bool = False,
             clahe: bool = False,
             histogram_matching: bool = False
@@ -81,17 +81,27 @@ class DirLabCOPD():
         self.return_lm_mask = return_lm_mask
         self.normalization_cfg = normalization_cfg
         if standardize_scan:
+            # if self.normalization_cfg is not None:
+            #     self.normalization_cfg['norm_type'] = 'z-score'
+            #     self.normalization_cfg['mask'] = 'lungs'
+            # else:
+            #     self.normalization_cfg = {'norm_type': 'z-score', 'mask': 'lungs'}
             if self.normalization_cfg is not None:
-                self.normalization_cfg['norm_type'] = 'z-score'
-                self.normalization_cfg['mask'] = 'lungs'
+                self.normalization_cfg['norm_type'] = 'min-max-nobkgrd'
+                self.normalization_cfg['mask'] = 'lungs' if self.return_lung_masks else None
+                self.normalization_cfg['dtype'] = 'float32'
+                self.normalization_cfg['max_val'] = 1.0
             else:
-                self.normalization_cfg = {'norm_type': 'z-score', 'mask': 'lungs'}
+                self.normalization_cfg = {
+                    'norm_type': 'min-max-nobkgrd', 'dtype': 'float32', 'max_val': 1.0,
+                    'mask': 'lungs' if self.return_lung_masks else None
+                }
 
         self.resize = resize
         self.return_imgs = return_imgs
         self.return_lung_masks = return_lung_masks
         self.return_body_masks = return_body_masks
-        self.resize_shape=resize_shape
+        self.resize_shape = resize_shape
 
         self.clahe = clahe
         self.histogram_matching = histogram_matching
@@ -133,7 +143,6 @@ class DirLabCOPD():
         sample['i_full_mask_path'] = str(case_path / f'{case}_iBHCT_lungs.nii.gz')
         if self.return_imgs:
             sample['i_img'] = sitk.ReadImage(sample['i_img_path'])
-
             sample['ref_metadata'] = utils.extract_metadata(sample['i_img'])
             sample['i_img'] = sitk.GetArrayFromImage(sample['i_img'])
             sample['i_img'] = np.moveaxis(sample['i_img'], [0, 1, 2], [2, 1, 0])
@@ -161,17 +170,6 @@ class DirLabCOPD():
             sample['i_img'] = preproc.normalize(sample['i_img'], **norm_cfg)
         if self.clahe:
             sample['i_img'] = equalize_adapthist(sample['i_img'], (8, 8, 8), 2)
-
-        if self.standardize_scan:
-            sample['i_img'] = preproc.normalize_scan(sample['i_img'], sample['i_lung_mask'],
-                                                     use_mask=self.return_lung_masks)
-
-        if self.resize:
-            factor = tuple(self.resize_shape[i]/ sample['i_img'].shape[i] for i in range(3))
-            sample['i_img'] = zoom(sample['i_img'], factor)
-            sample['i_img_factor'] = factor
-            if self.return_lung_masks:
-                sample['i_lung_mask'] = zoom(sample['i_lung_mask'], factor)
 
         # Landmarks
         if self.return_lm_mask:
@@ -219,33 +217,24 @@ class DirLabCOPD():
         if self.histogram_matching:
             sample['e_img'] = match_histograms(sample['e_img'], sample['i_img'])
 
-        # Resize images
-        if self.standardize_scan:
-            sample['e_img'] = preproc.normalize_scan(sample['e_img'], sample['e_lung_mask'],
-                                                     use_mask=self.return_lung_masks)
+        if self.resize:
+            # inhale
+            factor = tuple(self.resize_shape[i]/ sample['i_img'].shape[i] for i in range(3))
+            sample['i_img'] = zoom(sample['i_img'], (0.5, 0.5, factor))
+            sample['i_img_factor'] = factor
+            if 'i_lung_mask' in sample.keys():
+                sample['i_lung_mask'] = zoom(sample['i_lung_mask'], (0.5, 0.5, factor))
+            if 'i_body_mask' in sample.keys():
+                sample['i_body_mask'] = zoom(sample['i_body_mask'], (0.5, 0.5, factor))
 
-        # if self.resize:
-        #     # inhale
-        #     factor = 128 / sample['i_img'].shape[2]
-        #     sample['i_img'] = zoom(sample['i_img'], (0.5, 0.5, factor))
-        #     sample['i_img_factor'] = factor
-        #     if 'i_lung_mask' in sample.keys():
-        #         sample['i_lung_mask'] = zoom(sample['i_lung_mask'], (0.5, 0.5, factor))
-        #     if 'i_body_mask' in sample.keys():
-        #         sample['i_body_mask'] = zoom(sample['i_body_mask'], (0.5, 0.5, factor))
-        #     # exhale
-        #     factor = 128 / sample['e_img'].shape[2]
-        #     sample['e_img'] = zoom(sample['e_img'], (0.5, 0.5, factor))
-        #     sample['e_img_factor'] = factor
-        #     if 'e_lung_mask' in sample.keys():
-        #         sample['e_lung_mask'] = zoom(sample['e_lung_mask'], (0.5, 0.5, factor))
-        #     if 'e_body_mask' in sample.keys():
-        #         sample['e_body_mask'] = zoom(sample['e_body_mask'], (0.5, 0.5, factor))
-        #     factor = tuple(self.resize_shape[i]/ sample['e_img'].shape[i] for i in range(3))
-        #     sample['e_img'] = zoom(sample['e_img'], factor)
-        #     if self.return_lung_masks:
-        #         sample['e_lung_mask'] = zoom(sample['e_lung_mask'], factor)
-        #         sample['e_img_factor'] = factor
+            # exhale
+            factor = tuple(self.resize_shape[i]/ sample['e_img'].shape[i] for i in range(3))
+            sample['e_img'] = zoom(sample['e_img'], (0.5, 0.5, factor))
+            sample['e_img_factor'] = factor
+            if 'e_lung_mask' in sample.keys():
+                sample['e_lung_mask'] = zoom(sample['e_lung_mask'], (0.5, 0.5, factor))
+            if 'e_body_mask' in sample.keys():
+                sample['e_body_mask'] = zoom(sample['e_body_mask'], (0.5, 0.5, factor))
 
         if self.resize:
             factor = tuple(self.resize_shape[i]/ sample['e_img'].shape[i] for i in range(3))
