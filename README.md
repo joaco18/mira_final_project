@@ -59,15 +59,16 @@ export PYTHONPATH="${PYTHONPATH}:${cwd}/mira_final_project/"
 
 - Option 2: Get the processed images:
 
-    Processed images can be download from [this link](https://drive.google.com/file/d/1OScdnhRwFZgIG7V47Jle2NYCseP5Uqmn/view?usp=share_link)
+    Processed images can be download from [this link](https://drive.google.com/file/d/1OScdnhRwFZgIG7V47Jle2NYCseP5Uqmn/view?usp=share_link) (Warning, this data might not be updated,, is preferred to run the parsing yourself)
 
     The directory structure should be: mira_final_project/data/dir_lab_copd/caseN/copdN_iBHCT.img
 
 
-# FOR WINDOWS
+# Elastix installation and set up
+## FOR WINDOWS
 Intall elastix and be sure you can call it from command line.
 
-# FOR LINUX
+## FOR LINUX
 Just for linux
 ``` bash
 cd elastix/ &&
@@ -83,6 +84,17 @@ In case elastix doesn't work, try removing the binary from main anaconda bin fol
 ```
 rm /home/jseia/anaconda3/bin/transformix
 ```
+
+## Roadmap to run inference over new cases:
+After trying many alternatives (Ants, Voxel Morph, Elastix) the best algorithm resuted to be Elastix, using [elastix/parameter_maps/OUR/Par0003.bs-R6-ug_8.txt](elastix/parameter_maps/OUR/Par0003.bs-R6-ug_8.txt) parameter map file. The results can be checked in detail in the notebook [notebooks/develop_elastix.ipynb](notebooks/develop_elastix.ipynb).
+
+To run new cases please assure you have the data in the structure specified above. Modify the [elastix/inference_config.yaml.example](elastix/inference_config.yaml.example) file to adecuate it to your local machine. Run the inference code:
+
+```bash
+python elastix/inference.py
+```
+
+Check the results.
 
 ## Recommendations to contributers
 
