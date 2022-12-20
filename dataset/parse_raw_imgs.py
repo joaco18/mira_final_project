@@ -15,6 +15,7 @@ logging.basicConfig(level=logging.INFO)
 
 def parse_raw_images(data_path: Path, out_path: Path):
     """
+    Parses the raw images contained in data_path.
     Args:
         data_path (Path): path to the directory containing the raw cases
         out_path (Path): path to the directory where the parsed .nii versions
