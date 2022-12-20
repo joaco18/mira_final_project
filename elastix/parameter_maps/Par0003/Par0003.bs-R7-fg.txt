@@ -1,10 +1,13 @@
-//ImageTypes
+// ********** Image Types
+
 (FixedInternalImagePixelType "float")
 (FixedImageDimension 3)
 (MovingInternalImagePixelType "float")
 (MovingImageDimension 3)
 
-//Components
+
+// ********** Components
+
 (Registration "MultiResolutionRegistration")
 (FixedImagePyramid "FixedSmoothingImagePyramid")
 (MovingImagePyramid "MovingSmoothingImagePyramid")
@@ -13,18 +16,19 @@
 (Optimizer "StandardGradientDescent")
 (ResampleInterpolator "FinalBSplineInterpolator")
 (Resampler "DefaultResampler")
-(Transform "AffineTransform")
+(Transform "BSplineTransform")
+
 
 // ********** Pyramid
 
 // Total number of resolutions
-(NumberOfResolutions 4)
-
+(NumberOfResolutions 7)
+// default schedule: isotropic upsampling with factor 2
 
 // ********** Transform
 
-(AutomaticTransformInitialization "true")
-(AutomaticScalesEstimation "true")
+(FinalGridSpacingInPhysicalUnits 12.0 12.0 12.0)
+(GridSpacingSchedule 1.0 1.0 1.0 1.0 1.0 1.0 1.0)
 (HowToCombineTransforms "Compose")
 
 
@@ -34,7 +38,7 @@
 (MaximumNumberOfIterations 1000)
 
 //SP: Param_a in each resolution level. a_k = a/(A+k+1)^alpha
-(SP_a 500.0)
+(SP_a 10000.0)
 
 //SP: Param_alpha in each resolution level. a_k = a/(A+k+1)^alpha
 (SP_alpha 0.602)
@@ -56,20 +60,20 @@
 // ********** Several
 
 (WriteTransformParametersEachIteration "false")
-(WriteTransformParametersEachResolution "false")
+(WriteTransformParametersEachResolution "true")
+(WriteResultImageAfterEachResolution "false")
 (WriteResultImage "false")
 (ShowExactMetricValue "false")
-(ErodeFixedMask "false")
-(ErodeMovingMask "false")
-(UseDifferentiableOverlap "false")
+(ErodeMask "false")
 
 
 // ********** ImageSampler
 
 //Number of spatial samples used to compute the mutual information in each resolution level:
 (ImageSampler "RandomSparseMask")
-(NumberOfSpatialSamples 2048)
+(NumberOfSpatialSamples 2000)
 (NewSamplesEveryIteration "true")
+(UseRandomSampleRegion "false")
 
 
 // ********** Interpolator and Resampler
@@ -82,3 +86,4 @@
 
 //Default pixel value for pixels that come from outside the picture:
 (DefaultPixelValue 0)
+

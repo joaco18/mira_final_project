@@ -26,9 +26,8 @@ To set up the repository run the following Unix promt comands:
 Create the environment
 
 ```bash
-conda create -n mira_fp python==3.9.13 anaconda -y &&
-conda activate mira_fp &&
-conda update -n mira_fp conda -y
+conda create -n mira_fp anaconda -y &&
+conda activate mira_fp
 ```
 
 Install requirements:
@@ -38,7 +37,8 @@ pip install -r requirements.txt
 
 Add current repository path to PYTHONPATH
 ```bash
-export PYTHONPATH="${PYTHONPATH}:[PATH/mira_final_project/]"
+cwd=$(pwd) &&
+export PYTHONPATH="${PYTHONPATH}:${cwd}/mira_final_project/"
 ```
 
 ### Data
@@ -54,48 +54,47 @@ export PYTHONPATH="${PYTHONPATH}:[PATH/mira_final_project/]"
     
     To process the images run:
     ```bash
-    python parse_raw_imgs.py
+    python dataset/parse_raw_imgs.py
     ```
 
 - Option 2: Get the processed images:
 
-    Processed images can be download from [this link](https://drive.google.com/file/d/1OScdnhRwFZgIG7V47Jle2NYCseP5Uqmn/view?usp=share_link)
+    Processed images can be download from [this link](https://drive.google.com/file/d/1OScdnhRwFZgIG7V47Jle2NYCseP5Uqmn/view?usp=share_link) (Warning, this data might not be updated,, is preferred to run the parsing yourself)
 
     The directory structure should be: mira_final_project/data/dir_lab_copd/caseN/copdN_iBHCT.img
 
-# FOR JOAQUIN
+
+# Elastix installation and set up
+## FOR WINDOWS
+Intall elastix and be sure you can call it from command line.
+
+## FOR LINUX
 Just for linux
 ``` bash
 cd elastix/ &&
 cwd=$(pwd) &&
 cd ../ &&
 base="${cwd}/elastix-5.0.0-Linux" &&
-anacondaenv="/home/jseia/anaconda3/envs/mira_fp" &&
-export PATH=bin/:$PATH &&
-export LD_LIBRARY_PATH="${base}/lib":$LD_LIBRARY_PATH &&
-# sudo rm "${anacondaenv}/bin/elastix"  &&
-# sudo rm "${anacondaenv}/bin/transformix" &&
-# sudo rm "${anacondaenv}/lib/libANNlib-5.0.so"  &&
-# sudo rm "${anacondaenv}/lib/libANNlib-5.0.so.1" &&
-sudo ln -s "${base}/bin/elastix" "${anacondaenv}/bin/elastix" &&
-sudo ln -s "${base}/bin/transformix" "${anacondaenv}/bin/transformix" &&
-sudo ln -s "${base}/lib/libANNlib-5.0.so" "${anacondaenv}/lib/libANNlib-5.0.so" &&
-sudo ln -s "${base}/lib/libANNlib-5.0.so.1" "${anacondaenv}/lib/libANNlib-5.0.so.1" &&
-source ~/.bashrc
+# anacondaenv="/home/jseia/anaconda3/envs/mira_fp" &&
+export PATH="${base}/bin":$PATH &&
+export LD_LIBRARY_PATH="${base}/lib":$LD_LIBRARY_PATH 
 ```
 
-Just for linux
-``` bash
-sudo rm /usr/bin/elastix &&
-sudo rm /usr/bin/transformix &&
-sudo rm /usr/lib/libANNlib-5.0.so &&
-sudo rm /usr/lib/libANNlib-5.0.so.1 &&
-sudo ln -s "${base}/bin/elastix" /usr/bin/elastix &&
-sudo ln -s "${base}/bin/transformix" /usr/bin/transformix &&
-sudo ln -s "${base}/lib/libANNlib-5.0.so" /usr/lib/libANNlib-5.0.so &&
-sudo ln -s "${base}/lib/libANNlib-5.0.so.1" /usr/lib/libANNlib-5.0.so.1 &&
-source ~/.bashrc
+In case elastix doesn't work, try removing the binary from main anaconda bin folder:
 ```
+rm /home/jseia/anaconda3/bin/transformix
+```
+
+## Roadmap to run inference over new cases:
+After trying many alternatives (Ants, Voxel Morph, Elastix) the best algorithm resuted to be Elastix, using [elastix/parameter_maps/OUR/Par0003.bs-R6-ug_8.txt](elastix/parameter_maps/OUR/Par0003.bs-R6-ug_8.txt) parameter map file. The results can be checked in detail in the notebook [notebooks/develop_elastix.ipynb](notebooks/develop_elastix.ipynb).
+
+To run new cases please assure you have the data in the structure specified above. Modify the [elastix/inference_config.yaml.example](elastix/inference_config.yaml.example) file to adecuate it to your local machine. Run the inference code:
+
+```bash
+python elastix/inference.py
+```
+
+Check the results.
 
 ## Recommendations to contributers
 

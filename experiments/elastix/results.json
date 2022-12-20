@@ -1,0 +1,977 @@
+{
+    "P0007-Coarse-None-None": {
+        "copd1": {
+            "mean_tre": 8.8,
+            "std_tre": 4.81,
+            "time": 40.89961361885071
+        },
+        "copd2": {
+            "mean_tre": 13.15,
+            "std_tre": 6.29,
+            "time": 38.984830141067505
+        },
+        "copd3": {
+            "mean_tre": 4.91,
+            "std_tre": 2.97,
+            "time": 42.73033785820007
+        },
+        "copd4": {
+            "mean_tre": 9.86,
+            "std_tre": 4.04,
+            "time": 45.71993708610535
+        }
+    },
+    "P0007-Coarse+Fine-None-None": {
+        "copd1": {
+            "mean_tre": 8.79,
+            "std_tre": 4.82,
+            "time": 93.95209240913391
+        },
+        "copd2": {
+            "mean_tre": 13.15,
+            "std_tre": 6.28,
+            "time": 83.7642195224762
+        },
+        "copd3": {
+            "mean_tre": 4.89,
+            "std_tre": 2.98,
+            "time": 94.67966842651367
+        },
+        "copd4": {
+            "mean_tre": 9.84,
+            "std_tre": 4.06,
+            "time": 95.80124354362488
+        }
+    },
+    "P0007-Coarse+Fine+RP-None-None": {
+        "copd1": {
+            "mean_tre": 7.49,
+            "std_tre": 5.16,
+            "time": 191.91644644737244
+        },
+        "copd2": {
+            "mean_tre": 14.15,
+            "std_tre": 7.2,
+            "time": 179.95806097984314
+        },
+        "copd3": {
+            "mean_tre": 4.84,
+            "std_tre": 3.0,
+            "time": 196.74470829963684
+        },
+        "copd4": {
+            "mean_tre": 8.61,
+            "std_tre": 3.72,
+            "time": 200.98015356063843
+        }
+    },
+    "P0007-Coarse+Fine-Body-None": {
+        "copd1": {
+            "mean_tre": 7.57,
+            "std_tre": 5.42,
+            "time": 92.32727146148682
+        },
+        "copd2": {
+            "mean_tre": 11.86,
+            "std_tre": 6.22,
+            "time": 83.68598675727844
+        },
+        "copd3": {
+            "mean_tre": 4.53,
+            "std_tre": 2.83,
+            "time": 92.79583191871643
+        },
+        "copd4": {
+            "mean_tre": 7.48,
+            "std_tre": 3.78,
+            "time": 98.03088402748108
+        }
+    },
+    "P0007-Coarse+Fine-Lungs-None": {
+        "copd1": {
+            "mean_tre": 4.12,
+            "std_tre": 3.45,
+            "time": 97.51713514328003
+        },
+        "copd2": {
+            "mean_tre": 6.61,
+            "std_tre": 6.27,
+            "time": 85.64096641540527
+        },
+        "copd3": {
+            "mean_tre": 1.79,
+            "std_tre": 1.42,
+            "time": 100.50239849090576
+        },
+        "copd4": {
+            "mean_tre": 4.73,
+            "std_tre": 3.15,
+            "time": 96.58018326759338
+        }
+    },
+    "BSP-bsplines-None-None": {
+        "copd1": {
+            "mean_tre": 5.49,
+            "std_tre": 5.14,
+            "time": 235.14630103111267
+        },
+        "copd2": {
+            "mean_tre": 9.7,
+            "std_tre": 6.48,
+            "time": 222.59870600700378
+        },
+        "copd3": {
+            "mean_tre": 3.36,
+            "std_tre": 3.32,
+            "time": 255.52287197113037
+        },
+        "copd4": {
+            "mean_tre": 7.17,
+            "std_tre": 4.97,
+            "time": 255.37621665000916
+        }
+    },
+    "BSP-bsplines-Body-None": {
+        "copd1": {
+            "mean_tre": 3.24,
+            "std_tre": 3.59,
+            "time": 249.49356985092163
+        },
+        "copd2": {
+            "mean_tre": 7.89,
+            "std_tre": 6.79,
+            "time": 240.110178232193
+        },
+        "copd3": {
+            "mean_tre": 2.76,
+            "std_tre": 2.95,
+            "time": 249.8968608379364
+        },
+        "copd4": {
+            "mean_tre": 6.79,
+            "std_tre": 6.41,
+            "time": 252.19844365119934
+        }
+    },
+    "BSP-bsplines-Lungs-None": {
+        "copd1": {
+            "mean_tre": 1.11,
+            "std_tre": 1.05,
+            "time": 272.60267758369446
+        },
+        "copd2": {
+            "mean_tre": 2.12,
+            "std_tre": 2.62,
+            "time": 278.3260247707367
+        },
+        "copd3": {
+            "mean_tre": 1.11,
+            "std_tre": 1.0,
+            "time": 296.4925916194916
+        },
+        "copd4": {
+            "mean_tre": 1.39,
+            "std_tre": 1.11,
+            "time": 273.2813789844513
+        }
+    },
+    "P0008-affine-None-None": null,
+    "P0008-affine-Body-None": {
+        "copd1": {
+            "mean_tre": 12.3,
+            "std_tre": 4.89,
+            "time": 17.722164392471313
+        },
+        "copd2": {
+            "mean_tre": 16.88,
+            "std_tre": 5.74,
+            "time": 16.164642333984375
+        },
+        "copd3": {
+            "mean_tre": 5.38,
+            "std_tre": 3.28,
+            "time": 18.514392137527466
+        },
+        "copd4": {
+            "mean_tre": 9.41,
+            "std_tre": 3.73,
+            "time": 18.355087518692017
+        }
+    },
+    "P0008-affine-Lungs-None": null,
+    "P0008-affine+elastic-None-None": null,
+    "P0008-affine+elastic-Body-None": {
+        "copd1": {
+            "mean_tre": 9.85,
+            "std_tre": 5.11,
+            "time": 57.560927629470825
+        },
+        "copd2": {
+            "mean_tre": 13.01,
+            "std_tre": 7.01,
+            "time": 52.969611406326294
+        },
+        "copd3": {
+            "mean_tre": 3.6,
+            "std_tre": 2.92,
+            "time": 60.70539045333862
+        },
+        "copd4": {
+            "mean_tre": 6.99,
+            "std_tre": 3.62,
+            "time": 62.26317095756531
+        }
+    },
+    "P0008-affine+elastic-Lungs-None": null,
+    "P0003-affine-Lungs-None": {
+        "copd1": {
+            "mean_tre": 10.06,
+            "std_tre": 5.64,
+            "time": 36.6064019203186
+        },
+        "copd2": {
+            "mean_tre": 10.81,
+            "std_tre": 5.92,
+            "time": 29.5354266166687
+        },
+        "copd3": {
+            "mean_tre": 3.55,
+            "std_tre": 1.73,
+            "time": 36.62953972816467
+        },
+        "copd4": {
+            "mean_tre": 7.48,
+            "std_tre": 5.12,
+            "time": 35.24222183227539
+        }
+    },
+    "P0003-affine+R1-Lungs-None": {
+        "copd1": {
+            "mean_tre": 9.48,
+            "std_tre": 6.01,
+            "time": 68.87489223480225
+        },
+        "copd2": {
+            "mean_tre": 9.54,
+            "std_tre": 6.64,
+            "time": 57.39499258995056
+        },
+        "copd3": {
+            "mean_tre": 1.53,
+            "std_tre": 1.51,
+            "time": 70.20215058326721
+        },
+        "copd4": {
+            "mean_tre": 6.22,
+            "std_tre": 5.58,
+            "time": 68.68253684043884
+        }
+    },
+    "P0003-affine+R2-Lungs-None": {
+        "copd1": {
+            "mean_tre": 8.45,
+            "std_tre": 6.54,
+            "time": 80.07054615020752
+        },
+        "copd2": {
+            "mean_tre": 8.31,
+            "std_tre": 6.96,
+            "time": 66.67275214195251
+        },
+        "copd3": {
+            "mean_tre": 1.27,
+            "std_tre": 1.09,
+            "time": 81.01460456848145
+        },
+        "copd4": {
+            "mean_tre": 5.2,
+            "std_tre": 5.38,
+            "time": 78.56640982627869
+        }
+    },
+    "P0003-affine+R4-Lungs-None": {
+        "copd1": {
+            "mean_tre": 6.06,
+            "std_tre": 6.84,
+            "time": 101.25456953048706
+        },
+        "copd2": {
+            "mean_tre": 7.3,
+            "std_tre": 6.83,
+            "time": 85.69929218292236
+        },
+        "copd3": {
+            "mean_tre": 1.36,
+            "std_tre": 1.25,
+            "time": 104.0530219078064
+        },
+        "copd4": {
+            "mean_tre": 4.69,
+            "std_tre": 5.01,
+            "time": 98.91586494445801
+        }
+    },
+    "P0003-affine+R6-Lungs-None": {
+        "copd1": {
+            "mean_tre": 7.94,
+            "std_tre": 6.99,
+            "time": 122.76321768760681
+        },
+        "copd2": {
+            "mean_tre": 10.91,
+            "std_tre": 8.79,
+            "time": 103.25993824005127
+        },
+        "copd3": {
+            "mean_tre": 1.56,
+            "std_tre": 1.67,
+            "time": 123.74515843391418
+        },
+        "copd4": {
+            "mean_tre": 9.52,
+            "std_tre": 6.33,
+            "time": 118.29067182540894
+        }
+    },
+    "P0003-affine+R8-Lungs-None": {
+        "copd1": {
+            "mean_tre": 7.75,
+            "std_tre": 6.37,
+            "time": 148.63500571250916
+        },
+        "copd2": {
+            "mean_tre": 11.16,
+            "std_tre": 8.68,
+            "time": 121.09234666824341
+        },
+        "copd3": {
+            "mean_tre": 1.77,
+            "std_tre": 1.9,
+            "time": 151.2269148826599
+        },
+        "copd4": {
+            "mean_tre": 10.76,
+            "std_tre": 6.31,
+            "time": 136.992981672287
+        }
+    },
+    "P0003-affine+R8ug-Lungs-None": null,
+    "P0003-affine+R6ug-Lungs-None": {
+        "copd1": {
+            "mean_tre": 1.2,
+            "std_tre": 1.18,
+            "time": 109.33483481407166
+        },
+        "copd2": {
+            "mean_tre": 3.55,
+            "std_tre": 4.54,
+            "time": 90.911536693573
+        },
+        "copd3": {
+            "mean_tre": 1.21,
+            "std_tre": 0.99,
+            "time": 110.01048159599304
+        },
+        "copd4": {
+            "mean_tre": 1.64,
+            "std_tre": 1.32,
+            "time": 106.26740741729736
+        }
+    },
+    "P0003-affine+R4ug-Lungs-None": {
+        "copd1": {
+            "mean_tre": 1.21,
+            "std_tre": 1.07,
+            "time": 94.04643630981445
+        },
+        "copd2": {
+            "mean_tre": 3.29,
+            "std_tre": 4.16,
+            "time": 80.12521958351135
+        },
+        "copd3": {
+            "mean_tre": 1.17,
+            "std_tre": 0.99,
+            "time": 94.5142936706543
+        },
+        "copd4": {
+            "mean_tre": 1.69,
+            "std_tre": 1.56,
+            "time": 91.17892789840698
+        }
+    },
+    "P0003-affine+R2ug-Lungs-None": {
+        "copd1": {
+            "mean_tre": 4.65,
+            "std_tre": 6.16,
+            "time": 76.97265911102295
+        },
+        "copd2": {
+            "mean_tre": 5.33,
+            "std_tre": 6.44,
+            "time": 65.15362191200256
+        },
+        "copd3": {
+            "mean_tre": 1.22,
+            "std_tre": 1.01,
+            "time": 77.78901958465576
+        },
+        "copd4": {
+            "mean_tre": 2.72,
+            "std_tre": 3.57,
+            "time": 76.49139595031738
+        }
+    },
+    "P0003-R4ug-Lungs-None": {
+        "copd1": {
+            "mean_tre": 1.31,
+            "std_tre": 1.26,
+            "time": 68.47441744804382
+        },
+        "copd2": {
+            "mean_tre": 2.81,
+            "std_tre": 3.51,
+            "time": 61.93882775306702
+        },
+        "copd3": {
+            "mean_tre": 1.19,
+            "std_tre": 0.98,
+            "time": 70.07741189002991
+        },
+        "copd4": {
+            "mean_tre": 1.61,
+            "std_tre": 1.43,
+            "time": 58.49851179122925
+        }
+    },
+    "P0003-R6ug-Lungs-None": {
+        "copd1": {
+            "mean_tre": 1.24,
+            "std_tre": 1.21,
+            "time": 82.34048581123352
+        },
+        "copd2": {
+            "mean_tre": 3.07,
+            "std_tre": 3.93,
+            "time": 64.57431054115295
+        },
+        "copd3": {
+            "mean_tre": 1.21,
+            "std_tre": 1.0,
+            "time": 74.85786437988281
+        },
+        "copd4": {
+            "mean_tre": 1.53,
+            "std_tre": 1.17,
+            "time": 72.14132905006409
+        }
+    },
+    "P0003-R5ug-Lungs-None": {
+        "copd1": {
+            "mean_tre": 1.24,
+            "std_tre": 1.15,
+            "time": 69.81617856025696
+        },
+        "copd2": {
+            "mean_tre": 3.02,
+            "std_tre": 4.0,
+            "time": 61.08862566947937
+        },
+        "copd3": {
+            "mean_tre": 1.19,
+            "std_tre": 1.0,
+            "time": 74.51279020309448
+        },
+        "copd4": {
+            "mean_tre": 1.46,
+            "std_tre": 1.14,
+            "time": 73.09914755821228
+        }
+    },
+    "OUR-P0003-R5ug-pyram-Lungs-None": {
+        "copd1": {
+            "mean_tre": 1.18,
+            "std_tre": 1.04,
+            "time": 75.76600909233093
+        },
+        "copd2": {
+            "mean_tre": 2.72,
+            "std_tre": 3.3,
+            "time": 69.34826588630676
+        },
+        "copd3": {
+            "mean_tre": 1.17,
+            "std_tre": 0.98,
+            "time": 76.56133031845093
+        },
+        "copd4": {
+            "mean_tre": 1.48,
+            "std_tre": 1.16,
+            "time": 73.30639553070068
+        }
+    },
+    "OUR-P0003-pyram-Lungs-None": {
+        "copd1": {
+            "mean_tre": 1.16,
+            "std_tre": 1.09,
+            "time": 92.54191780090332
+        },
+        "copd2": {
+            "mean_tre": 2.73,
+            "std_tre": 3.28,
+            "time": 74.02566409111023
+        },
+        "copd3": {
+            "mean_tre": 1.19,
+            "std_tre": 0.98,
+            "time": 125.17067050933838
+        },
+        "copd4": {
+            "mean_tre": 1.45,
+            "std_tre": 1.08,
+            "time": 90.43959879875183
+        }
+    },
+    "OUR-P0003-Optim-Lungs-None": {
+        "copd1": {
+            "mean_tre": 1.2,
+            "std_tre": 1.07,
+            "time": 103.29322862625122
+        },
+        "copd2": {
+            "mean_tre": 2.54,
+            "std_tre": 3.14,
+            "time": 84.65143036842346
+        },
+        "copd3": {
+            "mean_tre": 1.18,
+            "std_tre": 1.0,
+            "time": 92.91860389709473
+        },
+        "copd4": {
+            "mean_tre": 1.52,
+            "std_tre": 1.19,
+            "time": 91.58665037155151
+        }
+    },
+    "OUR-P0003-Grid-Lungs-None": {
+        "copd1": {
+            "mean_tre": 1.47,
+            "std_tre": 2.19,
+            "time": 119.04984736442566
+        },
+        "copd2": {
+            "mean_tre": 1.91,
+            "std_tre": 2.0,
+            "time": 96.02840113639832
+        },
+        "copd3": {
+            "mean_tre": 1.11,
+            "std_tre": 0.95,
+            "time": 100.73599815368652
+        },
+        "copd4": {
+            "mean_tre": 14.22,
+            "std_tre": 11.41,
+            "time": 93.2820475101471
+        }
+    },
+    "OUR-P0003-Grid2-Lungs-None": {
+        "copd1": {
+            "mean_tre": 1.77,
+            "std_tre": 2.92,
+            "time": 88.18674516677856
+        },
+        "copd2": {
+            "mean_tre": 2.41,
+            "std_tre": 3.03,
+            "time": 76.46510553359985
+        },
+        "copd3": {
+            "mean_tre": 1.14,
+            "std_tre": 0.96,
+            "time": 92.65495610237122
+        },
+        "copd4": {
+            "mean_tre": 19.66,
+            "std_tre": 11.06,
+            "time": 82.23534202575684
+        }
+    },
+    "OUR-P0003-n_samples_1-Lungs-None": {
+        "copd1": {
+            "mean_tre": 1.14,
+            "std_tre": 1.07,
+            "time": 117.45108938217163
+        },
+        "copd2": {
+            "mean_tre": 2.32,
+            "std_tre": 2.89,
+            "time": 94.21573829650879
+        },
+        "copd3": {
+            "mean_tre": 1.17,
+            "std_tre": 0.98,
+            "time": 105.20333337783813
+        },
+        "copd4": {
+            "mean_tre": 1.44,
+            "std_tre": 1.06,
+            "time": 101.410564661026
+        }
+    },
+    "OUR-P0003-n_samples_2-Lungs-None": null,
+    "OUR-P0003-Recursive-Lungs-None": {
+        "copd1": {
+            "mean_tre": 1.19,
+            "std_tre": 1.09,
+            "time": 246.4280161857605
+        },
+        "copd2": {
+            "mean_tre": 2.18,
+            "std_tre": 2.79,
+            "time": 227.9276988506317
+        },
+        "copd3": {
+            "mean_tre": 1.16,
+            "std_tre": 0.97,
+            "time": 243.9596221446991
+        },
+        "copd4": {
+            "mean_tre": 1.39,
+            "std_tre": 1.01,
+            "time": 227.27744388580322
+        }
+    },
+    "OUR-P0003-SmoothMetric-Lungs-None": {
+        "copd1": {
+            "mean_tre": 1.15,
+            "std_tre": 1.04,
+            "time": 254.2881474494934
+        },
+        "copd2": {
+            "mean_tre": 2.21,
+            "std_tre": 2.73,
+            "time": 246.55036640167236
+        },
+        "copd3": {
+            "mean_tre": 1.14,
+            "std_tre": 1.0,
+            "time": 264.0931329727173
+        },
+        "copd4": {
+            "mean_tre": 1.37,
+            "std_tre": 1.01,
+            "time": 246.8770842552185
+        }
+    },
+    "OUR-P0003-RecursiveMetric-Lungs-None": {
+        "copd1": {
+            "mean_tre": 1.18,
+            "std_tre": 1.04,
+            "time": 239.43727922439575
+        },
+        "copd2": {
+            "mean_tre": 2.21,
+            "std_tre": 2.75,
+            "time": 216.74898266792297
+        },
+        "copd3": {
+            "mean_tre": 1.15,
+            "std_tre": 0.98,
+            "time": 238.76671743392944
+        },
+        "copd4": {
+            "mean_tre": 1.4,
+            "std_tre": 1.05,
+            "time": 241.0235481262207
+        }
+    },
+    "OUR-P0003-n_samples_3-Lungs-None": {
+        "copd1": {
+            "mean_tre": 1.17,
+            "std_tre": 1.02,
+            "time": 365.0365102291107
+        },
+        "copd2": {
+            "mean_tre": 2.08,
+            "std_tre": 2.35,
+            "time": 330.055668592453
+        },
+        "copd3": {
+            "mean_tre": 1.15,
+            "std_tre": 0.97,
+            "time": 349.575492143631
+        },
+        "copd4": {
+            "mean_tre": 1.41,
+            "std_tre": 1.01,
+            "time": 344.5377006530762
+        }
+    },
+    "OUR-P0003-5-Lungs-Window-None": null,
+    "OUR-P0003-8-Lungs-Window-None": {
+        "copd1": {
+            "mean_tre": 1.17,
+            "std_tre": 1.09,
+            "time": 365.65738439559937
+        },
+        "copd2": {
+            "mean_tre": 3.23,
+            "std_tre": 5.11,
+            "time": 230.51191782951355
+        },
+        "copd3": {
+            "mean_tre": 1.15,
+            "std_tre": 0.99,
+            "time": 252.6969051361084
+        },
+        "copd4": {
+            "mean_tre": 1.44,
+            "std_tre": 1.09,
+            "time": 243.7021119594574
+        }
+    },
+    "OUR-P0003-8-Lungs-Window-MM": {
+        "copd1": {
+            "mean_tre": 1.19,
+            "std_tre": 1.09,
+            "time": 249.85823321342468
+        },
+        "copd2": {
+            "mean_tre": 3.31,
+            "std_tre": 5.22,
+            "time": 228.7657322883606
+        },
+        "copd3": {
+            "mean_tre": 1.15,
+            "std_tre": 0.98,
+            "time": 251.86557364463806
+        },
+        "copd4": {
+            "mean_tre": 1.45,
+            "std_tre": 1.12,
+            "time": 245.54079008102417
+        }
+    },
+    "OUR-P0003-8-Lungs-Window-MML": {
+        "copd1": {
+            "mean_tre": 1.18,
+            "std_tre": 1.1,
+            "time": 270.07016015052795
+        },
+        "copd2": {
+            "mean_tre": 3.21,
+            "std_tre": 5.03,
+            "time": 241.24164199829102
+        },
+        "copd3": {
+            "mean_tre": 1.15,
+            "std_tre": 1.0,
+            "time": 264.6008713245392
+        },
+        "copd4": {
+            "mean_tre": 1.47,
+            "std_tre": 1.13,
+            "time": 237.05613231658936
+        }
+    },
+    "OUR-P0003-8-Lungs-Clahe-None": {
+        "copd1": {
+            "mean_tre": 1.35,
+            "std_tre": 1.7,
+            "time": 380.0277132987976
+        },
+        "copd2": {
+            "mean_tre": 3.3,
+            "std_tre": 5.18,
+            "time": 368.5030722618103
+        },
+        "copd3": {
+            "mean_tre": 1.1,
+            "std_tre": 0.96,
+            "time": 376.94541692733765
+        },
+        "copd4": {
+            "mean_tre": 11.54,
+            "std_tre": 18.43,
+            "time": 306.6102569103241
+        }
+    },
+    "OUR-P0003-8-Lungs-Window-MMB": {
+        "copd1": {
+            "mean_tre": 1.18,
+            "std_tre": 1.1,
+            "time": 275.4534213542938
+        },
+        "copd2": {
+            "mean_tre": 3.21,
+            "std_tre": 5.03,
+            "time": 253.28643369674683
+        },
+        "copd3": {
+            "mean_tre": 1.15,
+            "std_tre": 1.0,
+            "time": 277.31171798706055
+        },
+        "copd4": {
+            "mean_tre": 1.47,
+            "std_tre": 1.13,
+            "time": 217.39705300331116
+        }
+    },
+    "OUR-P0003-8-Lungs-Clahe-MM": {
+        "copd1": {
+            "mean_tre": 1.26,
+            "std_tre": 1.31,
+            "time": 241.40504837036133
+        },
+        "copd2": {
+            "mean_tre": 3.44,
+            "std_tre": 5.41,
+            "time": 224.59061479568481
+        },
+        "copd3": {
+            "mean_tre": 1.09,
+            "std_tre": 0.96,
+            "time": 240.43236231803894
+        },
+        "copd4": {
+            "mean_tre": 8.6,
+            "std_tre": 16.94,
+            "time": 227.82220220565796
+        }
+    },
+    "OUR-P0003-8-Lungs-Clahe-MML": {
+        "copd1": {
+            "mean_tre": 1.27,
+            "std_tre": 1.61,
+            "time": 241.7138147354126
+        },
+        "copd2": {
+            "mean_tre": 3.31,
+            "std_tre": 5.28,
+            "time": 246.12880182266235
+        },
+        "copd3": {
+            "mean_tre": 1.11,
+            "std_tre": 0.97,
+            "time": 279.041228055954
+        },
+        "copd4": {
+            "mean_tre": 9.32,
+            "std_tre": 17.16,
+            "time": 238.84380769729614
+        }
+    },
+    "OUR-P0003-8-Body-Clahe-MMB": {
+        "copd1": {
+            "mean_tre": 1.3,
+            "std_tre": 1.6,
+            "time": 245.5538682937622
+        },
+        "copd2": {
+            "mean_tre": 3.39,
+            "std_tre": 5.42,
+            "time": 230.649028301239
+        },
+        "copd3": {
+            "mean_tre": 1.11,
+            "std_tre": 0.96,
+            "time": 244.3862533569336
+        },
+        "copd4": {
+            "mean_tre": 10.02,
+            "std_tre": 17.75,
+            "time": 225.91838932037354
+        }
+    },
+    "OUR-P0003-8-Lungs-Nth-None": {
+        "copd1": {
+            "mean_tre": 1.15,
+            "std_tre": 1.04,
+            "time": 236.40915060043335
+        },
+        "copd2": {
+            "mean_tre": 2.21,
+            "std_tre": 2.73,
+            "time": 217.85487461090088
+        },
+        "copd3": {
+            "mean_tre": 1.14,
+            "std_tre": 1.0,
+            "time": 249.68032097816467
+        },
+        "copd4": {
+            "mean_tre": 1.37,
+            "std_tre": 1.01,
+            "time": 236.0748109817505
+        }
+    },
+    "OUR-P0003-8-Lungs-Nth-MM": {
+        "copd1": {
+            "mean_tre": 1.16,
+            "std_tre": 1.08,
+            "time": 237.6497461795807
+        },
+        "copd2": {
+            "mean_tre": 2.22,
+            "std_tre": 2.89,
+            "time": 219.22115874290466
+        },
+        "copd3": {
+            "mean_tre": 1.16,
+            "std_tre": 0.99,
+            "time": 267.75359296798706
+        },
+        "copd4": {
+            "mean_tre": 1.39,
+            "std_tre": 1.01,
+            "time": 274.059889793396
+        }
+    },
+    "OUR-P0003-8-Lungs-Nth-MML": {
+        "copd1": {
+            "mean_tre": 1.16,
+            "std_tre": 1.05,
+            "time": 267.02865862846375
+        },
+        "copd2": {
+            "mean_tre": 2.25,
+            "std_tre": 2.82,
+            "time": 231.6340615749359
+        },
+        "copd3": {
+            "mean_tre": 1.14,
+            "std_tre": 1.0,
+            "time": 256.06486892700195
+        },
+        "copd4": {
+            "mean_tre": 1.39,
+            "std_tre": 1.03,
+            "time": 227.18097925186157
+        }
+    },
+    "OUR-P0003-8-Body-Nth-MMB": {
+        "copd1": {
+            "mean_tre": 1.16,
+            "std_tre": 1.09,
+            "time": 240.20558047294617
+        },
+        "copd2": {
+            "mean_tre": 2.19,
+            "std_tre": 2.75,
+            "time": 217.1525263786316
+        },
+        "copd3": {
+            "mean_tre": 1.16,
+            "std_tre": 1.0,
+            "time": 237.8359878063202
+        },
+        "copd4": {
+            "mean_tre": 1.38,
+            "std_tre": 1.02,
+            "time": 231.04038619995117
+        }
+    }
+}
