@@ -4,7 +4,7 @@ import pandas as pd
 from skimage.exposure import match_histograms, equalize_adapthist
 import SimpleITK as sitk
 import numpy as np
-from monai.transforms import Rand3DElasticd, RandAffined, Spacingd, Compose
+from monai.transforms import Rand3DElasticd, Compose
 from scipy.ndimage import zoom
 
 import preprocess.preprocess as preproc
@@ -69,23 +69,23 @@ class DirLabCOPD():
                 Defaults to False.
             return_body_masks (bool, optional): Whether to return the body_masks.
                 Defaults to False.
-            standardize_scan (bool, optional): Whether to standardize the scan with mean and std.
+            standardize_scan (bool, optional): Whether to normalize the scan with marwan's min-max.
                 Defaults to False.
             resize (bool, optional): Whether to zoom data to have data of shape 256,256,128.
                 Defaults to False.
             resize_shape (tuple, optional): shape to resize to.
+            clahe (bool, optional): Whether to apply CLAHE enhacement or not. Defaults to False,
+            histogram_matching (bool, optional): Wether to apply histogram matching between
+                inhale and exhale images. Defaults to False,
         """
         self.data_path = data_path
         self.cases = cases
         self.partitions = partitions
         self.return_lm_mask = return_lm_mask
         self.normalization_cfg = normalization_cfg
+        
+        # Adjsut normalization to uniform the codes
         if standardize_scan:
-            # if self.normalization_cfg is not None:
-            #     self.normalization_cfg['norm_type'] = 'z-score'
-            #     self.normalization_cfg['mask'] = 'lungs'
-            # else:
-            #     self.normalization_cfg = {'norm_type': 'z-score', 'mask': 'lungs'}
             if self.normalization_cfg is not None:
                 self.normalization_cfg['norm_type'] = 'min-max-nobkgrd'
                 self.normalization_cfg['mask'] = 'lungs' if self.return_lung_masks else None
@@ -217,9 +217,10 @@ class DirLabCOPD():
         if self.histogram_matching:
             sample['e_img'] = match_histograms(sample['e_img'], sample['i_img'])
 
+        # Resize images
         if self.resize:
             # inhale
-            factor = tuple(self.resize_shape[i]/ sample['i_img'].shape[i] for i in range(3))
+            factor = tuple(self.resize_shape[i] / sample['i_img'].shape[i] for i in range(3))
             sample['i_img'] = zoom(sample['i_img'], (0.5, 0.5, factor))
             sample['i_img_factor'] = factor
             if 'i_lung_mask' in sample.keys():
@@ -228,20 +229,13 @@ class DirLabCOPD():
                 sample['i_body_mask'] = zoom(sample['i_body_mask'], (0.5, 0.5, factor))
 
             # exhale
-            factor = tuple(self.resize_shape[i]/ sample['e_img'].shape[i] for i in range(3))
+            factor = tuple(self.resize_shape[i] / sample['e_img'].shape[i] for i in range(3))
             sample['e_img'] = zoom(sample['e_img'], (0.5, 0.5, factor))
             sample['e_img_factor'] = factor
             if 'e_lung_mask' in sample.keys():
                 sample['e_lung_mask'] = zoom(sample['e_lung_mask'], (0.5, 0.5, factor))
             if 'e_body_mask' in sample.keys():
                 sample['e_body_mask'] = zoom(sample['e_body_mask'], (0.5, 0.5, factor))
-
-        if self.resize:
-            factor = tuple(self.resize_shape[i]/ sample['e_img'].shape[i] for i in range(3))
-            sample['e_img'] = zoom(sample['e_img'], factor)
-            sample['e_img_factor'] = factor
-            if self.return_lung_masks:
-                sample['e_lung_mask'] = zoom(sample['e_lung_mask'], factor)
 
         # Landmarks
         if self.return_lm_mask:

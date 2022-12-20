@@ -8,7 +8,12 @@ from preprocess.preprocess import get_lungs_mask
 from utils.utils import save_img_from_array_using_metadata
 
 
-def generate_lung_masks(data):
+def generate_lung_masks(data: DirLabCOPD):
+    """
+    Runs the lungs extraction and stores the images accordingly.
+    Args:
+        data (DirLabCOPD): DirLabCOPD dataset to get the masks from
+    """
     # Define fixed imgage to use
     for i in tqdm(range(len(data))):
         sample = data[i]
