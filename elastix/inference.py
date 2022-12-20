@@ -129,6 +129,7 @@ def run_experiment(
         landmarks_input = np.asarray(landmarks_input).astype('int')
 
         landmarks = utils.get_landmarks_array_from_txt_file(lm_out_filepath)
+        np.savetxt(str(lm_out_filepath.parent/f'{lm_out_filepath.stem}.txt'), landmarks, fmt='%d')
 
         # Get the TRE
         tre = target_registration_error(
