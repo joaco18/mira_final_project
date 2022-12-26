@@ -125,7 +125,7 @@ class DirLabCOPD():
         if self.return_lung_masks:
             sample['i_lung_mask'] = sitk.GetArrayFromImage(sitk.ReadImage(
                 str(case_path / f'{case}_iBHCT_lungs.nii.gz')))
-            sample['i_lung_mask'] = np.where(sample['i_lung_mask'] == 2, 255, 0)
+            # sample['i_lung_mask'] = np.where(sample['i_lung_mask'] == 2, 255, 0)
             sample['i_lung_mask'] = np.moveaxis(sample['i_lung_mask'], [0, 1, 2], [2, 1, 0])
 
         if self.return_body_masks:
@@ -168,7 +168,7 @@ class DirLabCOPD():
         if self.return_lung_masks:
             sample['e_lung_mask'] = sitk.GetArrayFromImage(sitk.ReadImage(
                 str(case_path / f'{case}_eBHCT_lungs.nii.gz')))
-            sample['e_lung_mask'] = np.where(sample['e_lung_mask'] == 2, 255, 0)
+            # sample['e_lung_mask'] = np.where(sample['e_lung_mask'] == 2, 255, 0)
             sample['e_lung_mask'] = np.moveaxis(sample['e_lung_mask'], [0, 1, 2], [2, 1, 0])
 
         if self.return_body_masks:
