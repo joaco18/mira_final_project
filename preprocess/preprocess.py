@@ -147,7 +147,7 @@ def get_lungs_mask_one_slice(img: np.ndarray, previous_mask: np.ndarray = None) 
         lungs_ = np.where(labels == idx[0], 1, 0)
         if len(idx) > 1:
             lungs_ = lungs_ + np.where(labels == idx[1], 1, 0)
-        # Perform whole filling with connected components
+        # Perform hole filling with connected components
         lungs_ = np.where(lungs_ == 0, 255, 0)
         _, labels, stats, _ = cv2.connectedComponentsWithStats(lungs_.astype('uint8'))
         lungs_ = np.where(labels != labels[0, 0], 255, 0)

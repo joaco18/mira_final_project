@@ -85,10 +85,14 @@ In case elastix doesn't work, try removing the binary from main anaconda bin fol
 rm /home/jseia/anaconda3/bin/transformix
 ```
 
-## Roadmap to run inference over new cases:
+# Roadmap to run inference over new cases:
+
 After trying many alternatives (Ants, Voxel Morph, Elastix) the best algorithm resuted to be Elastix, using [elastix/parameter_maps/OUR/Par0003.bs-R6-ug_8.txt](elastix/parameter_maps/OUR/Par0003.bs-R6-ug_8.txt) parameter map file. The results can be checked in detail in the notebook [notebooks/develop_elastix.ipynb](notebooks/develop_elastix.ipynb).
 
-To run new cases please assure you have the data in the structure specified above. Modify the [elastix/inference_config.yaml.example](elastix/inference_config.yaml.example) file to adecuate it to your local machine. Run the inference code:
+To run new cases please assure you have the data in the structure specified above. Modify the [elastix/inference_config.yaml.example](elastix/inference_config.yaml.example) file to adecuate it to your local machine. 
+In addition, you will need to also modify the data/dir_lab_copd_metadata.json to include the metadata of the new cases and if you don't have access to the exhale landmarks.txt file, copy and paste the inhale one as the exhale one (and be careful that the measured TRE after the algorithm finishes will tell you the mean deformation that the landmarks have suffered).
+
+Then, run the inference code:
 
 ```bash
 python elastix/inference.py
