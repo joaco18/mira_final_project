@@ -3,6 +3,7 @@ data/
 elastix/elastix-5.0.*
 experiments/elastix/Par*
 experiments/elastix/BSP*
+experiments/elastix/*.png
 antspy/ANTs
 antspy/build
 antspy/install
