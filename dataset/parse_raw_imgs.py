@@ -51,7 +51,7 @@ def parse_raw_images(data_path: Path, out_path: Path):
             img_out_path = case_out_path / f'{img_path.stem}.nii.gz'
             sitk.WriteImage(img, str(img_out_path))
 
-            # Generate landmarks mask
+            # Generate a copy of the landmarks that includes transformix header
             txt_out_file = case_out_path / f'{lm_path.stem}.txt'
             shutil.copy(str(lm_path), str(txt_out_file))
             with open(txt_out_file, 'r+') as f:
@@ -59,12 +59,14 @@ def parse_raw_images(data_path: Path, out_path: Path):
                 f.seek(0, 0)
                 f.write('index' + '\n' + '300' + '\n' + content)
 
+            # Generate a csv version of the landmarks
             landmarks = pd.read_csv(
                 lm_path, header=None, sep='\t |\t', engine='python').astype('int')
             lm_pts_out_path = case_out_path / f'{lm_path.stem}.csv'
             landmarks.to_csv(lm_pts_out_path, index=False, header=False)
             landmarks = landmarks.values
 
+            # Generate landmarks mask
             lm_mask = data_utils.generate_lm_mask(landmarks, meta['size'])
             lm_mask = np.moveaxis(lm_mask, [0, 1, 2], [2, 1, 0])
 
