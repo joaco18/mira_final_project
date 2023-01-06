@@ -83,7 +83,7 @@ def z_score_norm(
     return img
 
 
-def get_lungs_mask_one_slice(img: np.ndarray, previous_mask: np.ndarray = None) -> np.ndarray:
+def get_lungs_mask_one_slice(img: np.ndarray, previous_mask: np.ndarray = None, store_img=False) -> np.ndarray:
     """Get the lungs mask in a single slice using threholding and several
     connected compoents computations
     Args:
@@ -96,6 +96,8 @@ def get_lungs_mask_one_slice(img: np.ndarray, previous_mask: np.ndarray = None) 
     """
     # Global thresholding
     mask = np.where(img < 600, 255, 0).astype('uint8')
+    if store_img:
+        A = mask.copy()
 
     # If the image only contains background, return the empty mask
     if len(np.unique(mask)) == 1:
@@ -118,6 +120,8 @@ def get_lungs_mask_one_slice(img: np.ndarray, previous_mask: np.ndarray = None) 
 
     # Only keep the structures inside the body
     labels = labels * body
+    if store_img:
+        B = labels.copy()
 
     # If the mask from a previous slide exists, use it to contraint cases in
     # wich the trachea is bigger than the lungs or some othe bottom slices artifact
@@ -139,6 +143,8 @@ def get_lungs_mask_one_slice(img: np.ndarray, previous_mask: np.ndarray = None) 
         for lab in sel_labels:
             labels_ = labels_ + np.where(labels == lab, lab, 0)
         labels = labels_.copy()
+        if store_img:
+            C = labels.copy()
 
     # Keep just the two largest connected components inside the body
     _, labels, stats, _ = cv2.connectedComponentsWithStats(labels.astype('uint8'))
@@ -158,12 +164,17 @@ def get_lungs_mask_one_slice(img: np.ndarray, previous_mask: np.ndarray = None) 
     lungs = np.where(body != 0, 1, 0)
     lungs[lungs_ != 0] = 2
 
+    if store_img:
+        D = lungs.copy()
     # Remove the padding
     lungs = lungs[2:-2, 2:-2].astype('uint8')
+    
+    if store_img:
+        return lungs, A, B, C, D
     return lungs
 
 
-def get_lungs_mask(input_image: np.ndarray) -> np.ndarray:
+def get_lungs_mask(input_image: np.ndarray, store_img=False) -> np.ndarray:
     """Get the lungs mask in a chest CT scan using threholding and several
     connected compoents computations
     Args:
@@ -183,7 +194,13 @@ def get_lungs_mask(input_image: np.ndarray) -> np.ndarray:
             if k == 0:
                 lungs[i, :, :] = get_lungs_mask_one_slice(input_image[i, :, :], None)
             else:
+                if (i == 5) and store_img:
+                    lun, A5, B5, C5, D5 = get_lungs_mask_one_slice(input_image[i, :, :], lungs[prev, :, :], True)
+                if (i == 25) and store_img:
+                    lun, A25, B25, C25, D25 = get_lungs_mask_one_slice(input_image[i, :, :], lungs[prev, :, :], True)
                 lungs[i, :, :] = get_lungs_mask_one_slice(
                     input_image[i, :, :], lungs[prev, :, :])
             prev = i
+    if store_img:
+        return lungs.astype('uint8'),  A5, B5, C5, D5, A25, B25, C25, D25
     return lungs.astype('uint8')
